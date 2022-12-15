@@ -1,0 +1,28 @@
+{
+  "profiles": {
+    "TaskManager": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development,ConnectionStrings__DefaultConnection= Data Source/=DELL5520;Initial Catalog/=TaskManagerDB;Integrated Security/=True;MultipleActiveResultSets/=True"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7233;http://localhost:5128"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:39441",
+      "sslPort": 44301
+    }
+  }
+}
