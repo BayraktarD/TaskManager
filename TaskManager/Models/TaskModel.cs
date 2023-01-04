@@ -31,6 +31,8 @@ namespace TaskManager.Models
         [DataType(DataType.Date)]
         public DateTime? FinishedDate { get; set; }
         public bool IsActive { get; set; }
+
+        [StringLength(1000, ErrorMessage = "String too long(max. 1000 chars)")]
         public string Details { get; set; } = null!;
         public bool HasAttachments { get; set; }
 

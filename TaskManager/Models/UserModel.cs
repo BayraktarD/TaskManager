@@ -17,5 +17,7 @@
         public bool CanModifyTasks { get; set; }
         public Guid JobTitle { get; set; }
 
+        public Guid Department { get; set; }
+
     }
 }
