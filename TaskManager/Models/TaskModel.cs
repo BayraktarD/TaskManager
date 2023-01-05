@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskManager.Models
 {
@@ -35,6 +36,8 @@ namespace TaskManager.Models
         [StringLength(1000, ErrorMessage = "String too long(max. 1000 chars)")]
         public string Details { get; set; } = null!;
         public bool HasAttachments { get; set; }
+
+        public IEnumerable<SelectListItem> Users { get; set; }
 
     }
 }

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TaskManager.Data;
+using TaskManager.Models;
+using TaskManager.Repository;
 
 namespace TaskManager.Controllers
 {
@@ -8,9 +11,14 @@ namespace TaskManager.Controllers
     {
         private Repository.TaskRepository _repository;
 
+        private Repository.UserRepository _userRepository;
+
+
         public TaskController(ApplicationDbContext dbContext)
         {
             _repository = new Repository.TaskRepository(dbContext);
+
+            _userRepository = new Repository.UserRepository(dbContext);
         }
 
 
@@ -29,6 +37,25 @@ namespace TaskManager.Controllers
         // GET: TaskController/Create
         public ActionResult Create()
         {
+            List<SelectListItem> userList = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "---Select User---",
+                    Value = "-1"
+                }
+            };
+
+            foreach (var item in _userRepository.GetAllUsers())
+            {
+                userList.Add(new SelectListItem
+                {
+                    Text = item.IdUser.ToString(),
+                    Value = item.Username
+                });
+            }
+
+            ViewBag.UsersList = userList;
             return View("TaskCreate");
         }
 
@@ -98,6 +125,31 @@ namespace TaskManager.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult SelectCategory()
+        {
+
+            List<SelectListItem> userList = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "---Select User---",
+                    Value = "-1"
+                }
+            };
+
+            foreach (var item in _userRepository.GetAllUsers())
+            {
+                userList.Add(new SelectListItem
+                {
+                    Text = item.IdUser.ToString(),
+                    Value = item.Username
+                });
+            }
+
+            ViewBag.UsersList = userList;
+            return View();
         }
     }
 }

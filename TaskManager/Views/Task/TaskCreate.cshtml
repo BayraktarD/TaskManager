@@ -1,8 +1,11 @@
-﻿@model TaskManager.Models.TaskModel
+﻿@model TaskManager.Models.TaskModel;
 
 @{
     ViewData["Title"] = "TaskCreate";
+
+
     Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
 <h1>TaskCreate</h1>
@@ -47,16 +50,7 @@
                 <label asp-for="AssignedToId" class="control-label"></label>
                 <input asp-for="AssignedToId" class="form-control" />
                 <span asp-validation-for="AssignedToId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModificationDate" class="control-label"></label>
-                <input asp-for="ModificationDate" class="form-control" />
-                <span asp-validation-for="ModificationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedById" class="control-label"></label>
-                <input asp-for="ModifiedById" class="form-control" />
-                <span asp-validation-for="ModifiedById" class="text-danger"></span>
+                @Html.DropDownList("UsersList")
             </div>
             <div class="form-group">
                 <label asp-for="FinishedDate" class="control-label"></label>
@@ -90,5 +84,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
