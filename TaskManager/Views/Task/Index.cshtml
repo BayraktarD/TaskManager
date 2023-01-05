@@ -1,4 +1,5 @@
-﻿
+﻿@model IEnumerable<TaskManager.Models.TaskModel>
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,3 +7,108 @@
 
 <h1>Index</h1>
 
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdTask)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedById)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EditableStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EditableEndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedToId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModificationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedById)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FinishedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Details)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HasAttachments)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdTask)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedById)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EditableStartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EditableEndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedToId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModificationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedById)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FinishedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Details)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HasAttachments)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {  id=item.IdTask  }) |
+                @Html.ActionLink("Details", "Details", new { id=item.IdTask }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.IdTask })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -25,13 +25,15 @@ namespace TaskManager.Controllers
         // GET: TaskController
         public ActionResult Index()
         {
-            return View();
+            var taskList = _repository.GetAllTasks();
+            return View("Index", taskList);
         }
 
         // GET: TaskController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(Guid id)
         {
-            return View();
+            var task = _repository.GetTasksById(id);
+            return View("TaskDetails",task);
         }
 
         // GET: TaskController/Create
@@ -68,9 +70,10 @@ namespace TaskManager.Controllers
         }
 
         // GET: TaskController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(Guid id)
         {
-            return View();
+            var model = _repository.GetTasksById(id);
+            return View("TaskEdit", model);
         }
 
         // POST: TaskController/Edit/5
@@ -80,32 +83,45 @@ namespace TaskManager.Controllers
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                Models.TaskModel model = new Models.TaskModel();
+                var task = TryUpdateModelAsync(model);
+                task.Wait();
+                if (task.Result)
+                {
+                    _repository.UpdateTask(model);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return RedirectToAction("Index", id);
+                }
             }
             catch
             {
-                return View();
+                return RedirectToAction("Index", id);
             }
         }
 
         // GET: TaskController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(Guid id)
         {
-            return View();
+            var model = _repository.GetTasksById(id);
+            return View("TaskDelete",model);
         }
 
         // POST: TaskController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(Guid id, IFormCollection collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _repository.DeleteTask(id);
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+            return View("TaskDelete",id);
             }
         }
 

@@ -30,6 +30,15 @@ namespace TaskManager.Repository
             return listTask;
         }
 
+        public TaskModel GetTasksById(Guid id)
+        {
+            TaskModel task = new TaskModel();
+
+            task = MapDbObjectToModel(dbContext.Tasks.FirstOrDefault(x => x.IdTask == id));
+
+            return task;
+        }
+
         public List<TaskModel> GetAllTasksCreatedById(Guid id)
         {
             List<TaskModel> listTask = new List<TaskModel>();
