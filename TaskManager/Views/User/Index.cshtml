@@ -1,0 +1,120 @@
+﻿@model IEnumerable<TaskManager.Models.UserModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.IdUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.UserType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanCreateTasks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanAssignTasks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanUnassignTasks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanDeleteTasks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanActivateProfiles)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanDeactivateProfiles)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanModifyTasks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanCreateTasks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanAssignTasks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanUnassignTasks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanDeleteTasks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanActivateProfiles)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanDeactivateProfiles)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanModifyTasks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {  id=item.IdUser  }) |
+                @Html.ActionLink("Details", "Details", new { id=item.IdUser }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.IdUser })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

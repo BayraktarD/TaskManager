@@ -41,7 +41,6 @@ namespace TaskManager.Controllers
         {
             try
             {
-
                 Models.DepartmentModel departmentModel = new Models.DepartmentModel();
 
                 var task = TryUpdateModelAsync(departmentModel);

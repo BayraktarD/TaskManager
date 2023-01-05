@@ -1,4 +1,5 @@
-﻿using TaskManager.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Models.DBObjects;
 
@@ -28,6 +29,18 @@ namespace TaskManager.Repository
             return users;
         }
 
+        public UserModel GetUserById(Guid id)
+        {
+            UserModel userModel = new UserModel();
+
+            User user = dbContext.Users.FirstOrDefault(x => x.IdUser == id);
+            if (user != null)
+            {
+                MapDbObjectToModel(user);
+            }
+            return userModel;
+        }
+
         public UserModel MapDbObjectToModel(User dbUser)
         {
             UserModel user = new UserModel();
@@ -52,20 +65,38 @@ namespace TaskManager.Repository
             return user;
         }
 
-        public void AddUpdateUser(UserModel userModel)
+        public void InsertUser(UserModel userModel)
         {
             if (userModel != null)
             {
-                if (userModel.IdUser != null)
-                {
-                    dbContext.Update(MapModelToDbObject(userModel));
-                    dbContext.SaveChanges();
-                }
-                else
-                {
-                    dbContext.Add(MapModelToDbObject(userModel));
-                    dbContext.SaveChanges();
-                }
+                userModel.IdUser = Guid.NewGuid();
+                dbContext.Add(MapModelToDbObject(userModel));
+                dbContext.SaveChanges();
+            }
+        }
+
+        public void UpdateUser(UserModel userModel)
+        {
+            User user = dbContext.Users.FirstOrDefault(x => x.IdUser == userModel.IdUser);
+            if (user != null)
+            {
+                user.Username = userModel.Username;
+                user.Password = userModel.Password;
+                user.UserType = userModel.UserType;
+                user.IsActive = userModel.IsActive;
+                user.Email = userModel.Email;
+                user.CanCreateTasks = userModel.CanCreateTasks;
+                user.CanAssignTasks = userModel.CanAssignTasks;
+                user.CanUnassignTasks = userModel.CanUnassignTasks;
+                user.CanDeleteTasks = userModel.CanDeleteTasks;
+                user.CanActivateProfiles = userModel.CanActivateProfiles;
+                user.CanDeactivateProfiles = userModel.CanDeactivateProfiles;
+                user.CanModifyTasks = userModel.CanModifyTasks;
+                user.JobTitle = userModel.JobTitle;
+                user.Department = userModel.Department;
+
+                dbContext.Update(user);
+                dbContext.SaveChanges();
             }
         }
 
@@ -95,10 +126,20 @@ namespace TaskManager.Repository
 
         public void DeactivateUser(Guid idUser)
         {
-            User user = dbContext.Users.Where(x => x.IdUser == idUser).FirstOrDefault();
+            User user = dbContext.Users.FirstOrDefault(x => x.IdUser == idUser);
             if (user != null)
             {
                 user.IsActive = false;
+                dbContext.SaveChanges();
+            }
+        }
+
+        public void DeleteUser(Guid idUser)
+        {
+            User user = dbContext.Users.FirstOrDefault(x => x.IdUser == idUser);
+            if (user != null)
+            {
+                dbContext.Users.Remove(user);
                 dbContext.SaveChanges();
             }
         }
