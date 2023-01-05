@@ -37,25 +37,7 @@ namespace TaskManager.Controllers
         // GET: TaskController/Create
         public ActionResult Create()
         {
-            List<SelectListItem> userList = new List<SelectListItem>
-            {
-                new SelectListItem
-                {
-                    Text = "---Select User---",
-                    Value = "-1"
-                }
-            };
-
-            foreach (var item in _userRepository.GetAllUsers())
-            {
-                userList.Add(new SelectListItem
-                {
-                    Text = item.IdUser.ToString(),
-                    Value = item.Username
-                });
-            }
-
-            ViewBag.UsersList = userList;
+            SelectCategory();
             return View("TaskCreate");
         }
 
