@@ -1,39 +1,36 @@
-﻿@model TaskManager.Models.DepartmentModel
+﻿@model TaskManager.Models.JobTitlesModel
 
 @{
-    ViewData["Title"] = "DepartmentCreate";
+    ViewData["Title"] = "JobTitleCreate";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create Department</h1>
+<h1>JobTitleCreate</h1>
 
-<h4>Department Model</h4>
+<h4>JobTitlesModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @*<div class="form-group">
-                <label asp-for="IdDepartment" class="control-label"></label>
-                <input asp-for="IdDepartment" class="form-control" />
-                <span asp-validation-for="IdDepartment" class="text-danger"></span>
+                <label asp-for="IdJobTitle" class="control-label"></label>
+                <input asp-for="IdJobTitle" class="form-control" />
+                <span asp-validation-for="IdJobTitle" class="text-danger"></span>
             </div>*@
             <div class="form-group">
-                <label asp-for="Department1" class="control-label"></label>
-                <input asp-for="Department1" class="form-control" />
-                <span asp-validation-for="Department1" class="text-danger"></span>
+                <label asp-for="JobTitle1" class="control-label"></label>
+                <input asp-for="JobTitle1" class="form-control" />
+                <span asp-validation-for="JobTitle1" class="text-danger"></span>
             </div>
-
             <p></p>
-            
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
-<p>
-
+<p></p>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

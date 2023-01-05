@@ -22,7 +22,7 @@ namespace TaskManager.Repository
         {
             List<DepartmentModel> listDepartments = new List<DepartmentModel>();
 
-            foreach (var department in dbContext.Departments.OrderBy(x=>x.Department1))
+            foreach (var department in dbContext.Departments.OrderBy(x => x.Department1))
             {
                 listDepartments.Add(MapDbObjectToModel(department));
             }
@@ -32,7 +32,10 @@ namespace TaskManager.Repository
 
         public DepartmentModel GetDepartmentById(Guid id)
         {
-            DepartmentModel departmentModel= MapDbObjectToModel(dbContext.Departments.FirstOrDefault(x=>x.IdDepartment == id));
+            DepartmentModel departmentModel = new DepartmentModel();
+
+            departmentModel = MapDbObjectToModel(dbContext.Departments.FirstOrDefault(x => x.IdDepartment == id));
+
             return departmentModel;
         }
 
@@ -59,9 +62,11 @@ namespace TaskManager.Repository
 
         public Department MapModelToDbObject(DepartmentModel departmentModel)
         {
-            var department = new Department();
+            Department department = new Department();
+
             department.IdDepartment = departmentModel.IdDepartment;
             department.Department1 = departmentModel.Department1;
+
             return department;
         }
 
@@ -71,7 +76,9 @@ namespace TaskManager.Repository
             if (department != null)
             {
                 department.Department1 = departmentModel.Department1;
+
                 dbContext.Update(department);
+
                 dbContext.SaveChanges();
             }
         }
@@ -79,7 +86,7 @@ namespace TaskManager.Repository
         public void DeleteDepartment(Guid idDepartment)
         {
             Department department = dbContext.Departments.SingleOrDefault(x => x.IdDepartment == idDepartment);
-            if(department != null)
+            if (department != null)
             {
                 dbContext.Departments.Remove(department);
                 dbContext.SaveChanges();

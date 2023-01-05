@@ -1,0 +1,42 @@
+﻿@model IEnumerable<TaskManager.Models.JobTitlesModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdJobTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobTitle1)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdJobTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobTitle1)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {  id=item.IdJobTitle  }) |
+                @Html.ActionLink("Details", "Details", new { id=item.IdJobTitle }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.IdJobTitle })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
