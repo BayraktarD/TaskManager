@@ -5,20 +5,22 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>DepartmentDetails</h1>
+<h1>Department Details</h1>
 
 <div>
-    <h4>DepartmentModel</h4>
+    <h4>Department Model</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdDepartment)
+            @*@Html.DisplayNameFor(model => model.IdDepartment)*@
+            Department Id
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.IdDepartment)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Department1)
+            @*@Html.DisplayNameFor(model => model.Department1)*@
+            Department Name
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Department1)

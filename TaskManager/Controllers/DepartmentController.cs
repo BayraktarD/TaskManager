@@ -63,13 +63,13 @@ namespace TaskManager.Controllers
         public ActionResult Edit(Guid id)
         {
             var model = _repository.GetDepartmentById(id);
-            return View("DepartmentEdit");
+            return View("DepartmentEdit",model);
         }
 
         // POST: DepartmentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Guid id, IFormCollection collection)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace TaskManager.Controllers
         public ActionResult Delete(Guid id)
         {
             var model = _repository.GetDepartmentById(id);
-            return View("DepartmentDelete");
+            return View("DepartmentDelete", model);
         }
 
         // POST: DepartmentController/Delete/5

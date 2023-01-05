@@ -22,7 +22,7 @@ namespace TaskManager.Repository
         {
             List<DepartmentModel> listDepartments = new List<DepartmentModel>();
 
-            foreach (var department in dbContext.Departments)
+            foreach (var department in dbContext.Departments.OrderBy(x=>x.Department1))
             {
                 listDepartments.Add(MapDbObjectToModel(department));
             }
