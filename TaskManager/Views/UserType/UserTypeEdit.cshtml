@@ -1,0 +1,40 @@
+﻿@model TaskManager.Models.UserTypeModel
+
+@{
+    ViewData["Title"] = "UserTypeEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>UserTypeEdit</h1>
+
+<h4>UserTypeModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdUserType" class="control-label" hidden></label>
+                <input asp-for="IdUserType" class="form-control" hidden />
+                <span asp-validation-for="IdUserType" class="text-danger" hidden></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserType1" class="control-label"></label>
+                <input asp-for="UserType1" class="form-control" />
+                <span asp-validation-for="UserType1" class="text-danger"></span>
+            </div>
+            <p></p>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<p></p>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

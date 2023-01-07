@@ -64,16 +64,16 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            <td hidden>
                 @Html.DisplayFor(modelItem => item.IdUser)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Username)
             </td>
-            <td>
+            <td hidden>
                 @Html.DisplayFor(modelItem => item.Password)
             </td>
-            <td>
+            <td hidden>
                 @Html.DisplayFor(modelItem => item.UserType)
             </td>
             <td>

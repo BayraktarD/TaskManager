@@ -72,7 +72,7 @@ namespace TaskManager.Repository
 
         public void UpdateDepartment(DepartmentModel departmentModel)
         {
-            Department department = dbContext.Departments.SingleOrDefault(x => x.IdDepartment == departmentModel.IdDepartment);
+            Department department = dbContext.Departments.FirstOrDefault(x => x.IdDepartment == departmentModel.IdDepartment);
             if (department != null)
             {
                 department.Department1 = departmentModel.Department1;
@@ -85,7 +85,7 @@ namespace TaskManager.Repository
 
         public void DeleteDepartment(Guid idDepartment)
         {
-            Department department = dbContext.Departments.SingleOrDefault(x => x.IdDepartment == idDepartment);
+            Department department = dbContext.Departments.FirstOrDefault(x => x.IdDepartment == idDepartment);
             if (department != null)
             {
                 dbContext.Departments.Remove(department);

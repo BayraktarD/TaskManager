@@ -11,7 +11,7 @@ namespace TaskManager.Models
         [Display(Name = "Created By")]
         public Guid CreatedById { get; set; }
 
-        [Display(Name = "Created Ad")]
+        [Display(Name = "Created At")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         [DataType(DataType.Date)]
         public DateTime CreationDate { get; set; }

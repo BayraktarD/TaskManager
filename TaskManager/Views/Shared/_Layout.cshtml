@@ -19,21 +19,62 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark">|</a>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Task" asp-action="Index">Tasks</a>
                         </li>
+
+                        <li>
+                            <a class="nav-link text-dark">|</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="AttachmentType" asp-action="Index">Attachment Types</a>
+                        </li>
+
+                        <li>
+                            <a class="nav-link text-dark">|</a>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
                         </li>
+
+                        <li>
+                            <a class="nav-link text-dark">|</a>
+
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="UserType" asp-action="Index">User Types</a>
+                        </li>
+
+                        <li>
+                            <a class="nav-link text-dark">|</a>
+
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
                         </li>
+
+                        <li>
+                            <a class="nav-link text-dark">|</a>
+
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="JobTitles" asp-action="Index">Job Titles</a>
                         </li>
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

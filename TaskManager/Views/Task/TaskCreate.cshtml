@@ -48,9 +48,10 @@
             </div>
             <div class="form-group">
                 <label asp-for="AssignedToId" class="control-label"></label>
-                <input asp-for="AssignedToId" class="form-control" />
-                <span asp-validation-for="AssignedToId" class="text-danger"></span>
+                @*<input asp-for="AssignedToId" class="form-control" />*@
+                <br />
                 @Html.DropDownList("UsersList")
+                <span asp-validation-for="AssignedToId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FinishedDate" class="control-label"></label>

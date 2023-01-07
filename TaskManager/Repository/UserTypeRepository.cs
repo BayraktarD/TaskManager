@@ -28,6 +28,15 @@ namespace TaskManager.Repository
             return userTypes;
         }
 
+        public UserTypeModel GetUserTypeById(Guid id)
+        {
+            UserTypeModel userTypeModel = new UserTypeModel();
+
+            userTypeModel = MapDbObjectToModel(dbContext.UserTypes.FirstOrDefault(x => x.IdUserType == id));
+
+            return userTypeModel;
+        }
+
         public UserTypeModel MapDbObjectToModel(UserType dbUserType)
         {
             UserTypeModel userTypeModel = new UserTypeModel();
@@ -39,20 +48,21 @@ namespace TaskManager.Repository
             return userTypeModel;
         }
 
-        public void AddUpdateUserType(UserTypeModel userType)
+        public void InsertUserType(UserTypeModel userTypeModel)
         {
+            userTypeModel.IdUserType = Guid.NewGuid();
+            dbContext.Add(MapModelToDbObject(userTypeModel));
+            dbContext.SaveChanges();
+        }
+
+        public void UpdateUserType(UserTypeModel userTypeModel)
+        {
+            UserType userType = dbContext.UserTypes.FirstOrDefault(x => x.IdUserType == userTypeModel.IdUserType);
             if (userType != null)
             {
-                if (userType.IdUserType != null)
-                {
-                    dbContext.UserTypes.Update(MapModelToDbObject(userType));
-                    dbContext.SaveChanges();
-                }
-                else
-                {
-                    dbContext.UserTypes.Add(MapModelToDbObject(userType));
-                    dbContext.SaveChanges();
-                }
+                userType.UserType1 = userTypeModel.UserType1;
+                dbContext.Update(userType);
+                dbContext.SaveChanges();
             }
         }
 
@@ -65,6 +75,16 @@ namespace TaskManager.Repository
                 userType.UserType1 = userTypeModel.UserType1;
             }
             return userType;
+        }
+
+        public void DeleteUserType(Guid id)
+        {
+            UserType userType = dbContext.UserTypes.FirstOrDefault(x => x.IdUserType == id);
+            if (userType != null)
+            {
+                dbContext.UserTypes.Remove(userType);
+                dbContext.SaveChanges();
+            }
         }
 
     }

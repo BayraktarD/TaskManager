@@ -33,11 +33,8 @@ namespace TaskManager.Repository
         {
             UserModel userModel = new UserModel();
 
-            User user = dbContext.Users.FirstOrDefault(x => x.IdUser == id);
-            if (user != null)
-            {
-                MapDbObjectToModel(user);
-            }
+            userModel = MapDbObjectToModel(dbContext.Users.FirstOrDefault(x => x.IdUser == id));
+
             return userModel;
         }
 

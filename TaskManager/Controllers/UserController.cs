@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol.Core.Types;
 using TaskManager.Data;
 using TaskManager.Models;
+using TaskManager.Models.DBObjects;
 using TaskManager.Repository;
 
 namespace TaskManager.Controllers
@@ -13,6 +14,8 @@ namespace TaskManager.Controllers
         private Repository.UserRepository _repository;
         private Repository.DepartmentRepository _departmentRepository;
         private Repository.JobTitleRepository _jobTitlesRepository;
+        private Repository.UserTypeRepository _userTypeRepository;
+
 
 
 
@@ -21,6 +24,8 @@ namespace TaskManager.Controllers
             _repository = new Repository.UserRepository(dbContext);
             _departmentRepository = new Repository.DepartmentRepository(dbContext);
             _jobTitlesRepository = new Repository.JobTitleRepository(dbContext);
+            _userTypeRepository = new Repository.UserTypeRepository(dbContext);
+
         }
 
 
@@ -54,6 +59,34 @@ namespace TaskManager.Controllers
             try
             {
                 Models.UserModel model = new Models.UserModel();
+
+                Guid userType;
+                Guid jobTitle;
+                Guid department;
+
+                string userTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "UserTypesList").ToString();
+                userTypesListSelectedValue = GetDdlValue(userTypesListSelectedValue);
+
+                string jobTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "JobTitlesList").ToString();
+                jobTypesListSelectedValue = GetDdlValue(jobTypesListSelectedValue);
+
+                string departemntsListSelectedValue = collection.FirstOrDefault(x => x.Key == "DepartmentsList").ToString();
+                departemntsListSelectedValue = GetDdlValue(departemntsListSelectedValue);
+
+                if (Guid.TryParse(userTypesListSelectedValue, out userType)
+                    && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
+                    && Guid.TryParse(departemntsListSelectedValue, out department)
+                    )
+                {
+                    model.UserType = userType;
+                    model.JobTitle = jobTitle;
+                    model.Department = department;
+                }
+                else
+                {
+                    return RedirectToAction("UserCreate");
+                };
+
                 var task = TryUpdateModelAsync(model);
                 task.Wait();
                 if (task.Result)
@@ -67,6 +100,15 @@ namespace TaskManager.Controllers
                 return RedirectToAction("UserCreate");
             }
         }
+
+        private static string GetDdlValue(string input)
+        {
+            string output = input
+                .Substring(input.IndexOf(',') + 1,
+                            input.IndexOf(']') - input.Substring(0, input.IndexOf(',')).Length - 1).Trim();
+            return output;
+        }
+
 
         // GET: UserController/Edit/5
         public ActionResult Edit(Guid id)
@@ -168,6 +210,28 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.JobTitlesList = jobTitlesList;
+
+
+            //Populate user types ddl
+            List<SelectListItem> userTypesList = new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "---Select User Type---",
+                    Value = "-1"
+                }
+            };
+
+            foreach (var item in _userTypeRepository.GetUserTypes())
+            {
+                userTypesList.Add(new SelectListItem
+                {
+                    Text = item.UserType1.ToString(),
+                    Value = item.IdUserType.ToString()
+                });
+            }
+
+            ViewBag.UserTypesList = userTypesList;
 
 
             return View();

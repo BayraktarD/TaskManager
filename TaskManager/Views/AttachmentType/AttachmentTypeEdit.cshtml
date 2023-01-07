@@ -1,0 +1,40 @@
+﻿@model TaskManager.Models.AttachmentTypeModel
+
+@{
+    ViewData["Title"] = "AttachmentTypeEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>AttachmentTypeEdit</h1>
+
+<h4>AttachmentTypeModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdAttachmentType" class="control-label" hidden></label>
+                <input asp-for="IdAttachmentType" class="form-control" hidden />
+                <span asp-validation-for="IdAttachmentType" class="text-danger" hidden></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <input asp-for="Type" class="form-control" />
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+            <p></p>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<p></p>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
