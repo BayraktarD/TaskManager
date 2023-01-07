@@ -47,7 +47,7 @@ namespace TaskManager.Controllers
         // GET: UserController/Create
         public ActionResult Create()
         {
-            SelectCategory();
+            SelectCategory(null,null,null,null,null,null);
             return View("UserCreate");
         }
 
@@ -64,14 +64,9 @@ namespace TaskManager.Controllers
                 Guid jobTitle;
                 Guid department;
 
-                string userTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "UserTypesList").ToString();
-                userTypesListSelectedValue = GetDdlValue(userTypesListSelectedValue);
+                string userTypesListSelectedValue, jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                string jobTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "JobTitlesList").ToString();
-                jobTypesListSelectedValue = GetDdlValue(jobTypesListSelectedValue);
-
-                string departemntsListSelectedValue = collection.FirstOrDefault(x => x.Key == "DepartmentsList").ToString();
-                departemntsListSelectedValue = GetDdlValue(departemntsListSelectedValue);
+                GetGuidFromDdl(collection, out userTypesListSelectedValue, out jobTypesListSelectedValue, out departemntsListSelectedValue);
 
                 if (Guid.TryParse(userTypesListSelectedValue, out userType)
                     && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
@@ -114,6 +109,7 @@ namespace TaskManager.Controllers
         public ActionResult Edit(Guid id)
         {
             Models.UserModel model = _repository.GetUserById(id);
+            SelectCategory(model.DepartmentString, model.Department.ToString(),model.JobTitleString,model.JobTitle.ToString(),model.UserTypeString,model.UserType.ToString());
             return View("UserEdit", model);
         }
 
@@ -125,6 +121,25 @@ namespace TaskManager.Controllers
             try
             {
                 Models.UserModel model = new Models.UserModel();
+                Guid userType, jobTitle, department;
+                string userTypesListSelectedValue, jobTypesListSelectedValue, departemntsListSelectedValue;
+
+                GetGuidFromDdl(collection, out userTypesListSelectedValue, out jobTypesListSelectedValue, out departemntsListSelectedValue);
+
+                if (Guid.TryParse(userTypesListSelectedValue, out userType)
+                    && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
+                    && Guid.TryParse(departemntsListSelectedValue, out department)
+                    )
+                {
+                    model.UserType = userType;
+                    model.JobTitle = jobTitle;
+                    model.Department = department;
+                }
+                else
+                {
+                    return RedirectToAction("Index", id);
+                };
+
                 var task = TryUpdateModelAsync(model);
                 task.Wait();
                 if (task.Result)
@@ -141,6 +156,18 @@ namespace TaskManager.Controllers
             {
                 return RedirectToAction("Index", id);
             }
+        }
+
+        private static void GetGuidFromDdl(IFormCollection collection, out string userTypesListSelectedValue, out string jobTypesListSelectedValue, out string departemntsListSelectedValue)
+        {
+            userTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "UserTypesList").ToString();
+            userTypesListSelectedValue = GetDdlValue(userTypesListSelectedValue);
+
+            jobTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "JobTitlesList").ToString();
+            jobTypesListSelectedValue = GetDdlValue(jobTypesListSelectedValue);
+
+            departemntsListSelectedValue = collection.FirstOrDefault(x => x.Key == "DepartmentsList").ToString();
+            departemntsListSelectedValue = GetDdlValue(departemntsListSelectedValue);
         }
 
         // GET: UserController/Delete/5
@@ -166,20 +193,30 @@ namespace TaskManager.Controllers
             }
         }
 
-        public ActionResult SelectCategory()
+        public ActionResult SelectCategory(string departmentText, string departmentValue, string jobTitleText, string jobTitleValue, string userTypeText, string userTypeValue)
         {
 
             //Populate departments ddl
-            List<SelectListItem> departmentsList = new List<SelectListItem>
+            List<SelectListItem> departmentsList = new List<SelectListItem>();
+
+            if (departmentText == null && departmentValue == null)
             {
-                new SelectListItem
+                departmentsList.Add(new SelectListItem
                 {
                     Text = "---Select Department---",
                     Value = "-1"
-                }
-            };
+                });
+            }
+            else
+            {
+                departmentsList.Add(new SelectListItem
+                {
+                    Text = departmentText,
+                    Value = departmentValue
+                });
+            }
 
-            foreach (var item in _departmentRepository.GetAllDepartments())
+            foreach (var item in _departmentRepository.GetAllDepartments().Where(x => x.IdDepartment.ToString() != departmentValue).OrderBy(x=>x.Department1))
             {
                 departmentsList.Add(new SelectListItem
                 {
@@ -191,16 +228,26 @@ namespace TaskManager.Controllers
             ViewBag.DepartmentsList = departmentsList;
 
             //Populate job titles ddl
-            List<SelectListItem> jobTitlesList = new List<SelectListItem>
+            List<SelectListItem> jobTitlesList = new List<SelectListItem>();
+
+            if (jobTitleText == null && jobTitleValue == null)
             {
-                new SelectListItem
+                jobTitlesList.Add(new SelectListItem
                 {
                     Text = "---Select Job Title---",
                     Value = "-1"
-                }
-            };
+                });
+            }
+            else
+            {
+                jobTitlesList.Add(new SelectListItem
+                {
+                    Text = jobTitleText,
+                    Value = jobTitleValue
+                });
+            }
 
-            foreach (var item in _jobTitlesRepository.GetAllJobTitles())
+            foreach (var item in _jobTitlesRepository.GetAllJobTitles().Where(x => x.IdJobTitle.ToString() != jobTitleValue).OrderBy(x=>x.JobTitle1))
             {
                 jobTitlesList.Add(new SelectListItem
                 {
@@ -213,16 +260,27 @@ namespace TaskManager.Controllers
 
 
             //Populate user types ddl
-            List<SelectListItem> userTypesList = new List<SelectListItem>
+            List<SelectListItem> userTypesList = new List<SelectListItem>();
+
+            if (userTypeText == null && userTypeValue == null)
             {
-                new SelectListItem
+
+                userTypesList.Add(new SelectListItem
                 {
                     Text = "---Select User Type---",
                     Value = "-1"
-                }
+                });
+            }
+            else
+            {
+                userTypesList.Add(new SelectListItem
+                {
+                    Text = userTypeText,
+                    Value = userTypeValue
+                });
             };
 
-            foreach (var item in _userTypeRepository.GetUserTypes())
+            foreach (var item in _userTypeRepository.GetUserTypes().Where(x=>x.IdUserType.ToString() != userTypeValue).OrderBy(x=>x.UserType1))
             {
                 userTypesList.Add(new SelectListItem
                 {
@@ -232,7 +290,6 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.UserTypesList = userTypesList;
-
 
             return View();
         }

@@ -14,8 +14,10 @@ namespace TaskManager.Models
         [Display(Name = "Password")]
         public string Password { get; set; } = null!;
 
-        [Display(Name = "User Type")]
         public Guid UserType { get; set; }
+
+        [Display(Name = "User Type")]
+        public string? UserTypeString { get; set; }
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; }
@@ -44,11 +46,12 @@ namespace TaskManager.Models
         [Display(Name = "Can Modify Tasks")]
         public bool CanModifyTasks { get; set; }
 
-        [Display(Name = "Job Title")]
         public Guid JobTitle { get; set; }
+        [Display(Name = "Job Title")]
+        public string? JobTitleString { get; set; }
 
-        [Display(Name = "Department")]
         public Guid Department { get; set; }
-
+        [Display(Name = "Department")]
+        public string? DepartmentString { get; set; }
     }
 }

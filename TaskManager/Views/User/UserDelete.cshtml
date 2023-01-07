@@ -31,10 +31,10 @@
             @Html.DisplayFor(model => model.Password)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserType)
+            @Html.DisplayNameFor(model => model.UserTypeString)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserType)
+            @Html.DisplayFor(model => model.UserTypeString)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IsActive)
@@ -91,20 +91,20 @@
             @Html.DisplayFor(model => model.CanModifyTasks)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.JobTitle)
+            @Html.DisplayNameFor(model => model.JobTitleString)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.JobTitle)
+            @Html.DisplayFor(model => model.JobTitleString)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Department)
+            @Html.DisplayNameFor(model => model.DepartmentString)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Department)
+            @Html.DisplayFor(model => model.DepartmentString)
         </dd>
     </dl>
     
-    <form asp-action="UserDelete">
+    <form asp-action="Delete">
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

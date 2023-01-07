@@ -47,6 +47,7 @@ namespace TaskManager.Repository
                 user.Username = dbUser.Username;
                 user.Password = dbUser.Password;
                 user.UserType = dbUser.UserType;
+                user.UserTypeString = dbContext.UserTypes.FirstOrDefault(x => x.IdUserType == dbUser.UserType).UserType1.ToString();
                 user.IsActive = dbUser.IsActive;
                 user.Email = dbUser.Email;
                 user.CanCreateTasks = dbUser.CanCreateTasks;
@@ -57,7 +58,9 @@ namespace TaskManager.Repository
                 user.CanDeactivateProfiles = dbUser.CanDeactivateProfiles;
                 user.CanModifyTasks = dbUser.CanModifyTasks;
                 user.JobTitle = dbUser.JobTitle;
+                user.JobTitleString = dbContext.JobTitles.FirstOrDefault(x => x.IdJobTitle == dbUser.JobTitle).JobTitle1.ToString();
                 user.Department = dbUser.Department;
+                user.DepartmentString = dbContext.Departments.FirstOrDefault(x=>x.IdDepartment == dbUser.Department).Department1.ToString();
             }
             return user;
         }
