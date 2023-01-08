@@ -50,7 +50,7 @@ namespace TaskManager.Controllers
         {
             try
             {
-                Models.TaskModel taskModel = new Models.TaskModel();
+                Models.TaskModel model = new Models.TaskModel();
 
                 Guid assignedTo;
 
@@ -58,7 +58,7 @@ namespace TaskManager.Controllers
                 // trebuie dezvoltat dupa ce se creaza login-ul
                 Guid.TryParse("3f52c669-1282-4276-926d-a5624133069d", out Guid hardCodeCreatedById);
 
-                taskModel.CreatedById = hardCodeCreatedById;
+                model.CreatedById = hardCodeCreatedById;
                 //------------------------------------------------------------------------------------
 
 
@@ -70,16 +70,20 @@ namespace TaskManager.Controllers
 
                 if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
                 {
-                    taskModel.AssignedToId = assignedTo;
+                    model.AssignedToId = assignedTo;
 
-                    taskModel.CreationDate = DateTime.Now;
+                    //model.AssignedToString = "";
+                    //model.ModificationDate = model.EndDate;
+                    //model.ModifiedById = assignedTo;
 
-                    var task = TryUpdateModelAsync(taskModel);
+                    model.CreationDate = DateTime.Now.Date;
+
+                    var task = TryUpdateModelAsync(model);
                     task.Wait();
 
                     if (task.Result)
                     {
-                        _repository.InsertTask(taskModel);
+                        _repository.InsertTask(model);
                     }
                     return View("Index");
 
@@ -108,7 +112,7 @@ namespace TaskManager.Controllers
         // POST: TaskController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Guid id, IFormCollection collection)
         {
             try
             {

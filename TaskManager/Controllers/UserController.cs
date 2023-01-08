@@ -86,6 +86,7 @@ namespace TaskManager.Controllers
                     model.UserType = userType;
                     model.JobTitle = jobTitle;
                     model.Department = department;
+
                     var task = TryUpdateModelAsync(model);
                     task.Wait();
                     if (task.Result)

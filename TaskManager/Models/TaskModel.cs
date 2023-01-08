@@ -61,7 +61,7 @@ namespace TaskManager.Models
         [Display(Name = "Has Attachments")]
         public bool HasAttachments { get; set; }
 
-        public IEnumerable<SelectListItem> Users { get; set; }
+        //public IEnumerable<SelectListItem> Users { get; set; }
 
     }
 }
