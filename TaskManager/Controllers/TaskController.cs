@@ -33,13 +33,13 @@ namespace TaskManager.Controllers
         public ActionResult Details(Guid id)
         {
             var task = _repository.GetTasksById(id);
-            return View("TaskDetails",task);
+            return View("TaskDetails", task);
         }
 
         // GET: TaskController/Create
         public ActionResult Create()
         {
-            SelectCategory();
+            SelectCategory(null, null);
             return View("TaskCreate");
         }
 
@@ -52,15 +52,43 @@ namespace TaskManager.Controllers
             {
                 Models.TaskModel taskModel = new Models.TaskModel();
 
-                var task = TryUpdateModelAsync(taskModel);
-                task.Wait();
+                Guid assignedTo;
 
-                if (task.Result)
+
+                // trebuie dezvoltat dupa ce se creaza login-ul
+                Guid.TryParse("3f52c669-1282-4276-926d-a5624133069d", out Guid hardCodeCreatedById);
+
+                taskModel.CreatedById = hardCodeCreatedById;
+                //------------------------------------------------------------------------------------
+
+
+                string userListAssignedToSelectedValue;
+                string ddlUserListName = "UsersList";
+
+                GetGuidFromDdl(collection, ddlUserListName, out userListAssignedToSelectedValue);
+
+
+                if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
                 {
-                    _repository.InsertTask(taskModel);
+                    taskModel.AssignedToId = assignedTo;
+
+                    taskModel.CreationDate = DateTime.Now;
+
+                    var task = TryUpdateModelAsync(taskModel);
+                    task.Wait();
+
+                    if (task.Result)
+                    {
+                        _repository.InsertTask(taskModel);
+                    }
+                    return View("Index");
+
+                }
+                else
+                {
+                    return View("TaskCreate");
                 }
 
-                return View("Index");
             }
             catch
             {
@@ -73,6 +101,7 @@ namespace TaskManager.Controllers
         public ActionResult Edit(Guid id)
         {
             var model = _repository.GetTasksById(id);
+            SelectCategory(model.AssignedToString, model.AssignedToId.ToString());
             return View("TaskEdit", model);
         }
 
@@ -84,17 +113,35 @@ namespace TaskManager.Controllers
             try
             {
                 Models.TaskModel model = new Models.TaskModel();
-                var task = TryUpdateModelAsync(model);
-                task.Wait();
-                if (task.Result)
+
+                Guid assignedTo;
+
+                string userListAssignedToSelectedValue;
+                string ddlUserListName = "UsersList";
+
+                GetGuidFromDdl(collection, ddlUserListName, out userListAssignedToSelectedValue);
+
+
+                if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
                 {
-                    _repository.UpdateTask(model);
-                    return RedirectToAction("Index");
+                    var task = TryUpdateModelAsync(model);
+                    task.Wait();
+                    if (task.Result)
+                    {
+                        _repository.UpdateTask(model);
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", id);
+                    }
                 }
+
                 else
                 {
                     return RedirectToAction("Index", id);
                 }
+
             }
             catch
             {
@@ -102,11 +149,25 @@ namespace TaskManager.Controllers
             }
         }
 
+        private static void GetGuidFromDdl(IFormCollection collection, string ddlName, out string output)
+        {
+            output = collection.FirstOrDefault(x => x.Key == ddlName).ToString();
+            output = GetDdlValue(output);
+        }
+
+        private static string GetDdlValue(string input)
+        {
+            string output = input
+                .Substring(input.IndexOf(',') + 1,
+                            input.IndexOf(']') - input.Substring(0, input.IndexOf(',')).Length - 1).Trim();
+            return output;
+        }
+
         // GET: TaskController/Delete/5
         public ActionResult Delete(Guid id)
         {
             var model = _repository.GetTasksById(id);
-            return View("TaskDelete",model);
+            return View("TaskDelete", model);
         }
 
         // POST: TaskController/Delete/5
@@ -121,28 +182,37 @@ namespace TaskManager.Controllers
             }
             catch
             {
-            return View("TaskDelete",id);
+                return View("TaskDelete", id);
             }
         }
 
-        public ActionResult SelectCategory()
+        public ActionResult SelectCategory(string userText, string userValue)
         {
 
-            List<SelectListItem> userList = new List<SelectListItem>
-            {
-                new SelectListItem
-                {
-                    Text = "---Select User---",
-                    Value = "-1"
-                }
-            };
-
-            foreach (var item in _userRepository.GetAllUsers())
+            List<SelectListItem> userList = new List<SelectListItem>();
+            if (userText == null && userValue == null)
             {
                 userList.Add(new SelectListItem
                 {
-                    Text = item.IdUser.ToString(),
-                    Value = item.Username
+                    Text = "---Select User---",
+                    Value = "-1"
+                });
+            }
+            else
+            {
+                userList.Add(new SelectListItem
+                {
+                    Text = userText,
+                    Value = userValue
+                });
+            }
+
+            foreach (var item in _userRepository.GetAllUsers().Where(x => x.IdUser.ToString() != userValue))
+            {
+                userList.Add(new SelectListItem
+                {
+                    Text = item.Username.ToString(),
+                    Value = item.IdUser.ToString()
                 });
             }
 

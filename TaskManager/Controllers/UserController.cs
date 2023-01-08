@@ -47,7 +47,7 @@ namespace TaskManager.Controllers
         // GET: UserController/Create
         public ActionResult Create()
         {
-            SelectCategory(null,null,null,null,null,null);
+            SelectCategory(null, null, null, null, null, null);
             return View("UserCreate");
         }
 
@@ -66,7 +66,17 @@ namespace TaskManager.Controllers
 
                 string userTypesListSelectedValue, jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                GetGuidFromDdl(collection, out userTypesListSelectedValue, out jobTypesListSelectedValue, out departemntsListSelectedValue);
+                string ddlUserTypes, ddlJobTitles, ddlDepartments;
+
+                ddlUserTypes = "UserTypesList";
+                ddlJobTitles = "JobTitlesList";
+                ddlDepartments = "DepartmentsList";
+
+
+                GetGuidFromDdl(collection, ddlUserTypes, out userTypesListSelectedValue);
+                GetGuidFromDdl(collection, ddlJobTitles, out jobTypesListSelectedValue);
+                GetGuidFromDdl(collection, ddlDepartments, out departemntsListSelectedValue);
+
 
                 if (Guid.TryParse(userTypesListSelectedValue, out userType)
                     && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
@@ -76,19 +86,19 @@ namespace TaskManager.Controllers
                     model.UserType = userType;
                     model.JobTitle = jobTitle;
                     model.Department = department;
+                    var task = TryUpdateModelAsync(model);
+                    task.Wait();
+                    if (task.Result)
+                    {
+                        _repository.InsertUser(model);
+                    }
+                    return RedirectToAction("Index");
                 }
                 else
                 {
                     return RedirectToAction("UserCreate");
                 };
 
-                var task = TryUpdateModelAsync(model);
-                task.Wait();
-                if (task.Result)
-                {
-                    _repository.InsertUser(model);
-                }
-                return RedirectToAction("Index");
             }
             catch
             {
@@ -96,20 +106,14 @@ namespace TaskManager.Controllers
             }
         }
 
-        private static string GetDdlValue(string input)
-        {
-            string output = input
-                .Substring(input.IndexOf(',') + 1,
-                            input.IndexOf(']') - input.Substring(0, input.IndexOf(',')).Length - 1).Trim();
-            return output;
-        }
+
 
 
         // GET: UserController/Edit/5
         public ActionResult Edit(Guid id)
         {
             Models.UserModel model = _repository.GetUserById(id);
-            SelectCategory(model.DepartmentString, model.Department.ToString(),model.JobTitleString,model.JobTitle.ToString(),model.UserTypeString,model.UserType.ToString());
+            SelectCategory(model.DepartmentString, model.Department.ToString(), model.JobTitleString, model.JobTitle.ToString(), model.UserTypeString, model.UserType.ToString());
             return View("UserEdit", model);
         }
 
@@ -124,7 +128,16 @@ namespace TaskManager.Controllers
                 Guid userType, jobTitle, department;
                 string userTypesListSelectedValue, jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                GetGuidFromDdl(collection, out userTypesListSelectedValue, out jobTypesListSelectedValue, out departemntsListSelectedValue);
+                string ddlUserTypes, ddlJobTitles, ddlDepartments;
+
+                ddlUserTypes = "UserTypesList";
+                ddlJobTitles = "JobTitlesList";
+                ddlDepartments = "DepartmentsList";
+
+
+                GetGuidFromDdl(collection, ddlUserTypes, out userTypesListSelectedValue);
+                GetGuidFromDdl(collection, ddlJobTitles, out jobTypesListSelectedValue);
+                GetGuidFromDdl(collection, ddlDepartments, out departemntsListSelectedValue);
 
                 if (Guid.TryParse(userTypesListSelectedValue, out userType)
                     && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
@@ -158,16 +171,18 @@ namespace TaskManager.Controllers
             }
         }
 
-        private static void GetGuidFromDdl(IFormCollection collection, out string userTypesListSelectedValue, out string jobTypesListSelectedValue, out string departemntsListSelectedValue)
+        private static void GetGuidFromDdl(IFormCollection collection, string ddlName, out string output)
         {
-            userTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "UserTypesList").ToString();
-            userTypesListSelectedValue = GetDdlValue(userTypesListSelectedValue);
+            output = collection.FirstOrDefault(x => x.Key == ddlName).ToString();
+            output = GetDdlValue(output);
+        }
 
-            jobTypesListSelectedValue = collection.FirstOrDefault(x => x.Key == "JobTitlesList").ToString();
-            jobTypesListSelectedValue = GetDdlValue(jobTypesListSelectedValue);
-
-            departemntsListSelectedValue = collection.FirstOrDefault(x => x.Key == "DepartmentsList").ToString();
-            departemntsListSelectedValue = GetDdlValue(departemntsListSelectedValue);
+        private static string GetDdlValue(string input)
+        {
+            string output = input
+                .Substring(input.IndexOf(',') + 1,
+                            input.IndexOf(']') - input.Substring(0, input.IndexOf(',')).Length - 1).Trim();
+            return output;
         }
 
         // GET: UserController/Delete/5
@@ -216,7 +231,7 @@ namespace TaskManager.Controllers
                 });
             }
 
-            foreach (var item in _departmentRepository.GetAllDepartments().Where(x => x.IdDepartment.ToString() != departmentValue).OrderBy(x=>x.Department1))
+            foreach (var item in _departmentRepository.GetAllDepartments().Where(x => x.IdDepartment.ToString() != departmentValue).OrderBy(x => x.Department1))
             {
                 departmentsList.Add(new SelectListItem
                 {
@@ -247,7 +262,7 @@ namespace TaskManager.Controllers
                 });
             }
 
-            foreach (var item in _jobTitlesRepository.GetAllJobTitles().Where(x => x.IdJobTitle.ToString() != jobTitleValue).OrderBy(x=>x.JobTitle1))
+            foreach (var item in _jobTitlesRepository.GetAllJobTitles().Where(x => x.IdJobTitle.ToString() != jobTitleValue).OrderBy(x => x.JobTitle1))
             {
                 jobTitlesList.Add(new SelectListItem
                 {
@@ -280,7 +295,7 @@ namespace TaskManager.Controllers
                 });
             };
 
-            foreach (var item in _userTypeRepository.GetUserTypes().Where(x=>x.IdUserType.ToString() != userTypeValue).OrderBy(x=>x.UserType1))
+            foreach (var item in _userTypeRepository.GetUserTypes().Where(x => x.IdUserType.ToString() != userTypeValue).OrderBy(x => x.UserType1))
             {
                 userTypesList.Add(new SelectListItem
                 {

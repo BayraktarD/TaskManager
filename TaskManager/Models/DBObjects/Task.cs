@@ -16,7 +16,7 @@ namespace TaskManager.Models.DBObjects
         public DateTime StartDate { get; set; }
         public bool EditableStartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public bool? EditableEndDate { get; set; }
+        public bool EditableEndDate { get; set; }
         public Guid? AssignedToId { get; set; }
         public DateTime? ModificationDate { get; set; }
         public Guid? ModifiedById { get; set; }

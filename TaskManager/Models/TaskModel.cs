@@ -31,10 +31,12 @@ namespace TaskManager.Models
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Editable End Date")]
-        public bool? EditableEndDate { get; set; }
+        public bool EditableEndDate { get; set; }
+
+        public Guid? AssignedToId { get; set; }
 
         [Display(Name = "Assigned To")]
-        public Guid? AssignedToId { get; set; }
+        public string? AssignedToString { get; set; }
 
         [Display(Name = "Modified At")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]

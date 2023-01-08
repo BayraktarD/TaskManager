@@ -19,37 +19,37 @@
             <th>
                 @Html.DisplayNameFor(model => model.CreatedById)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.CreationDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.StartDate)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.EditableStartDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.EditableEndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AssignedToId)
+                @Html.DisplayNameFor(model => model.AssignedToString)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.ModificationDate)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.ModifiedById)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.FinishedDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsActive)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.Details)
             </th>
             <th>
@@ -67,37 +67,37 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedById)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.CreationDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.EditableStartDate)
             </td>
-            <td>
+                <td>
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.EditableEndDate)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedToId)
+                <td>
+                @Html.DisplayFor(modelItem => item.AssignedToString)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.ModificationDate)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.ModifiedById)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.FinishedDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsActive)
             </td>
-            <td>
+                <td hidden>
                 @Html.DisplayFor(modelItem => item.Details)
             </td>
             <td>

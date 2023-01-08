@@ -88,6 +88,7 @@ namespace TaskManager.Repository
                 listTask.EndDate = dbTask.EndDate;
                 listTask.EditableEndDate = dbTask.EditableEndDate;
                 listTask.AssignedToId = dbTask.AssignedToId;
+                listTask.AssignedToString = dbContext.Users.FirstOrDefault(x => x.IdUser == dbTask.AssignedToId).Username;
                 listTask.ModificationDate = dbTask.ModificationDate;
                 listTask.ModifiedById = dbTask.ModifiedById;
                 listTask.FinishedDate = dbTask.FinishedDate;

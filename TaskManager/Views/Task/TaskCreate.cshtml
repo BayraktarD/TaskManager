@@ -21,11 +21,11 @@
                 <input asp-for="CreatedById" class="form-control" />
                 <span asp-validation-for="CreatedById" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="CreationDate" class="control-label"></label>
                 <input asp-for="CreationDate" class="form-control" />
                 <span asp-validation-for="CreationDate" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
@@ -41,17 +41,17 @@
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="EditableEndDate" class="control-label"></label>
-                <input asp-for="EditableEndDate" class="form-control" />
-                <span asp-validation-for="EditableEndDate" class="text-danger"></span>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="EditableEndDate" /> @Html.DisplayNameFor(model => model.EditableEndDate)
+                </label>
             </div>
             <div class="form-group">
-                <label asp-for="AssignedToId" class="control-label"></label>
+                <label asp-for="AssignedToString" class="control-label"></label>
                 @*<input asp-for="AssignedToId" class="form-control" />*@
                 <br />
                 @Html.DropDownList("UsersList")
-                <span asp-validation-for="AssignedToId" class="text-danger"></span>
+                <span asp-validation-for="AssignedToString" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FinishedDate" class="control-label"></label>
