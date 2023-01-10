@@ -7,12 +7,12 @@ namespace TaskManager.Models.DBObjects
     {
         public JobTitle()
         {
-            Users = new HashSet<User>();
+            Employees = new HashSet<Employee>();
         }
 
         public Guid IdJobTitle { get; set; }
         public string JobTitle1 { get; set; } = null!;
 
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

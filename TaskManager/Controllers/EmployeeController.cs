@@ -9,81 +9,74 @@ using TaskManager.Repository;
 
 namespace TaskManager.Controllers
 {
-    public class UserController : Controller
+    public class EmployeeController : Controller
     {
-        private Repository.UserRepository _repository;
+        private Repository.EmployeeRepository _repository;
         private Repository.DepartmentRepository _departmentRepository;
         private Repository.JobTitleRepository _jobTitlesRepository;
-        private Repository.UserTypeRepository _userTypeRepository;
 
 
 
 
-        public UserController(ApplicationDbContext dbContext)
+        public EmployeeController(ApplicationDbContext dbContext)
         {
-            _repository = new Repository.UserRepository(dbContext);
+            _repository = new Repository.EmployeeRepository(dbContext);
             _departmentRepository = new Repository.DepartmentRepository(dbContext);
             _jobTitlesRepository = new Repository.JobTitleRepository(dbContext);
-            _userTypeRepository = new Repository.UserTypeRepository(dbContext);
 
         }
 
 
 
-        // GET: UserController
+        // GET: EmployeeController
         public ActionResult Index()
         {
-            var users = _repository.GetAllUsers();
+            var users = _repository.GetAllEmployees();
             return View("Index", users);
         }
 
-        // GET: UserController/Details/5
+        // GET: EmployeeController/Details/5
         public ActionResult Details(Guid id)
         {
-            var user = _repository.GetUserById(id);
-            return View("UserDetails", user);
+            var user = _repository.GetEmployeeById(id);
+            return View("EmployeeDetails", user);
         }
 
-        // GET: UserController/Create
+        // GET: EmployeeController/Create
         public ActionResult Create()
         {
-            SelectCategory(null, null, null, null, null, null);
-            return View("UserCreate");
+            SelectCategory(null, null, null, null);
+            return View("EmployeeCreate");
         }
 
-        // POST: UserController/Create
+        // POST: EmployeeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
         {
             try
             {
-                Models.UserModel model = new Models.UserModel();
+                Models.EmployeeModel model = new Models.EmployeeModel();
 
-                Guid userType;
                 Guid jobTitle;
                 Guid department;
 
-                string userTypesListSelectedValue, jobTypesListSelectedValue, departemntsListSelectedValue;
+                string jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                string ddlUserTypes, ddlJobTitles, ddlDepartments;
+                string  ddlJobTitles, ddlDepartments;
 
-                ddlUserTypes = "UserTypesList";
                 ddlJobTitles = "JobTitlesList";
                 ddlDepartments = "DepartmentsList";
 
 
-                GetGuidFromDdl(collection, ddlUserTypes, out userTypesListSelectedValue);
                 GetGuidFromDdl(collection, ddlJobTitles, out jobTypesListSelectedValue);
                 GetGuidFromDdl(collection, ddlDepartments, out departemntsListSelectedValue);
 
 
-                if (Guid.TryParse(userTypesListSelectedValue, out userType)
-                    && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
+                if (Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
                     && Guid.TryParse(departemntsListSelectedValue, out department)
                     )
                 {
-                    model.UserType = userType;
                     model.JobTitle = jobTitle;
                     model.Department = department;
 
@@ -97,55 +90,51 @@ namespace TaskManager.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("UserCreate");
+                    return RedirectToAction("EmployeeCreate");
                 };
 
             }
             catch
             {
-                return RedirectToAction("UserCreate");
+                return RedirectToAction("EmployeeCreate");
             }
         }
 
 
 
 
-        // GET: UserController/Edit/5
+        // GET: EmployeeController/Edit/5
         public ActionResult Edit(Guid id)
         {
-            Models.UserModel model = _repository.GetUserById(id);
-            SelectCategory(model.DepartmentString, model.Department.ToString(), model.JobTitleString, model.JobTitle.ToString(), model.UserTypeString, model.UserType.ToString());
-            return View("UserEdit", model);
+            Models.EmployeeModel model = _repository.GetEmployeeById(id);
+            SelectCategory(model.DepartmentString, model.Department.ToString(), model.JobTitleString, model.JobTitle.ToString());
+            return View("EmployeeEdit", model);
         }
 
-        // POST: UserController/Edit/5
+        // POST: EmployeeController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Guid id, IFormCollection collection)
         {
             try
             {
-                Models.UserModel model = new Models.UserModel();
-                Guid userType, jobTitle, department;
-                string userTypesListSelectedValue, jobTypesListSelectedValue, departemntsListSelectedValue;
+                Models.EmployeeModel model = new Models.EmployeeModel();
+                Guid  jobTitle, department;
+                string  jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                string ddlUserTypes, ddlJobTitles, ddlDepartments;
+                string  ddlJobTitles, ddlDepartments;
 
-                ddlUserTypes = "UserTypesList";
                 ddlJobTitles = "JobTitlesList";
                 ddlDepartments = "DepartmentsList";
 
 
-                GetGuidFromDdl(collection, ddlUserTypes, out userTypesListSelectedValue);
                 GetGuidFromDdl(collection, ddlJobTitles, out jobTypesListSelectedValue);
                 GetGuidFromDdl(collection, ddlDepartments, out departemntsListSelectedValue);
 
-                if (Guid.TryParse(userTypesListSelectedValue, out userType)
-                    && Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
+                if ( Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
                     && Guid.TryParse(departemntsListSelectedValue, out department)
                     )
                 {
-                    model.UserType = userType;
                     model.JobTitle = jobTitle;
                     model.Department = department;
                 }
@@ -186,14 +175,14 @@ namespace TaskManager.Controllers
             return output;
         }
 
-        // GET: UserController/Delete/5
+        // GET: EmployeeController/Delete/5
         public ActionResult Delete(Guid id)
         {
-            var model = _repository.GetUserById(id);
-            return View("UserDelete", model);
+            var model = _repository.GetEmployeeById(id);
+            return View("EmployeeDelete", model);
         }
 
-        // POST: UserController/Delete/5
+        // POST: EmployeeController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid id, IFormCollection collection)
@@ -205,11 +194,11 @@ namespace TaskManager.Controllers
             }
             catch
             {
-                return RedirectToAction("UserDelete", id);
+                return RedirectToAction("EmployeeDelete", id);
             }
         }
 
-        public ActionResult SelectCategory(string departmentText, string departmentValue, string jobTitleText, string jobTitleValue, string userTypeText, string userTypeValue)
+        public ActionResult SelectCategory(string departmentText, string departmentValue, string jobTitleText, string jobTitleValue)
         {
 
             //Populate departments ddl
@@ -273,40 +262,6 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.JobTitlesList = jobTitlesList;
-
-
-            //Populate user types ddl
-            List<SelectListItem> userTypesList = new List<SelectListItem>();
-
-            if (userTypeText == null && userTypeValue == null)
-            {
-
-                userTypesList.Add(new SelectListItem
-                {
-                    Text = "---Select User Type---",
-                    Value = "-1"
-                });
-            }
-            else
-            {
-                userTypesList.Add(new SelectListItem
-                {
-                    Text = userTypeText,
-                    Value = userTypeValue
-                });
-            };
-
-            foreach (var item in _userTypeRepository.GetUserTypes().Where(x => x.IdUserType.ToString() != userTypeValue).OrderBy(x => x.UserType1))
-            {
-                userTypesList.Add(new SelectListItem
-                {
-                    Text = item.UserType1.ToString(),
-                    Value = item.IdUserType.ToString()
-                });
-            }
-
-            ViewBag.UserTypesList = userTypesList;
-
             return View();
         }
     }

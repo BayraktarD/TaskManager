@@ -11,14 +11,14 @@ namespace TaskManager.Controllers
     {
         private Repository.TaskRepository _repository;
 
-        private Repository.UserRepository _userRepository;
+        private Repository.EmployeeRepository _employeeRepository;
 
 
         public TaskController(ApplicationDbContext dbContext)
         {
             _repository = new Repository.TaskRepository(dbContext);
 
-            _userRepository = new Repository.UserRepository(dbContext);
+            _employeeRepository = new Repository.EmployeeRepository(dbContext);
         }
 
 
@@ -190,11 +190,11 @@ namespace TaskManager.Controllers
             }
         }
 
-        public ActionResult SelectCategory(string userText, string userValue)
+        public ActionResult SelectCategory(string employeeText, string employeeValue)
         {
 
             List<SelectListItem> userList = new List<SelectListItem>();
-            if (userText == null && userValue == null)
+            if (employeeText == null && employeeValue == null)
             {
                 userList.Add(new SelectListItem
                 {
@@ -206,17 +206,17 @@ namespace TaskManager.Controllers
             {
                 userList.Add(new SelectListItem
                 {
-                    Text = userText,
-                    Value = userValue
+                    Text = employeeText,
+                    Value = employeeValue
                 });
             }
 
-            foreach (var item in _userRepository.GetAllUsers().Where(x => x.IdUser.ToString() != userValue))
+            foreach (var item in _employeeRepository.GetAllEmployees().Where(x => x.IdEmployee.ToString() != employeeValue))
             {
                 userList.Add(new SelectListItem
                 {
-                    Text = item.Username.ToString(),
-                    Value = item.IdUser.ToString()
+                    Text = item.Name.ToString() + item.Surname.ToString(),
+                    Value = item.IdEmployee.ToString()
                 });
             }
 

@@ -25,9 +25,9 @@ namespace TaskManager.Models.DBObjects
         public string Details { get; set; } = null!;
         public bool HasAttachments { get; set; }
 
-        public virtual User? AssignedTo { get; set; }
-        public virtual User CreatedBy { get; set; } = null!;
-        public virtual User? ModifiedBy { get; set; }
+        public virtual Employee? AssignedTo { get; set; }
+        public virtual Employee CreatedBy { get; set; } = null!;
+        public virtual Employee? ModifiedBy { get; set; }
         public virtual ICollection<TaskAttachment> TaskAttachments { get; set; }
     }
 }

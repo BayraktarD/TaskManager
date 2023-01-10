@@ -3,21 +3,19 @@ using System.Xml.Linq;
 
 namespace TaskManager.Models
 {
-    public class UserModel
+    public class EmployeeModel
     {
+        [Display(Name = "Employee Id")]
+        public Guid IdEmployee { get; set; }
+
+        [Display(Name = "Name")]
+        public string Name { get; set; } = null!;
+
+        [Display(Name = "Surname")]
+        public string Surname { get; set; } = null!;
+
         [Display(Name = "User Id")]
-        public Guid IdUser { get; set; }
-
-        [Display(Name = "Username")]
-        public string Username { get; set; } = null!;
-
-        [Display(Name = "Password")]
-        public string Password { get; set; } = null!;
-
-        public Guid UserType { get; set; }
-
-        [Display(Name = "User Type")]
-        public string? UserTypeString { get; set; }
+        public string UserId { get; set; }
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; }
