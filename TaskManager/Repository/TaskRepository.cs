@@ -1,12 +1,15 @@
 ﻿
+using TaskManager.Controllers;
 using TaskManager.Data;
 using TaskManager.Models;
+using TaskManager.Models.DBObjects;
 
 namespace TaskManager.Repository
 {
     public class TaskRepository
     {
         private ApplicationDbContext dbContext;
+
 
         public TaskRepository()
         {
@@ -16,6 +19,7 @@ namespace TaskManager.Repository
         public TaskRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
+
         }
 
         public List<TaskModel> GetAllTasks()
@@ -82,15 +86,18 @@ namespace TaskManager.Repository
             {
                 listTask.IdTask = dbTask.IdTask;
                 listTask.CreatedById = dbTask.CreatedById;
+                listTask.CreatedByString = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.CreatedById).Name + " " + dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.CreatedById).Surname;
                 listTask.CreationDate = dbTask.CreationDate;
                 listTask.StartDate = dbTask.StartDate;
                 listTask.EditableStartDate = dbTask.EditableStartDate;
                 listTask.EndDate = dbTask.EndDate;
                 listTask.EditableEndDate = dbTask.EditableEndDate;
                 listTask.AssignedToId = dbTask.AssignedToId;
-                listTask.AssignedToString = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.AssignedToId).Name + dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.AssignedToId).Surname;
+                listTask.AssignedToString = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.AssignedToId).Name + " " + dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.AssignedToId).Surname;
                 listTask.ModificationDate = dbTask.ModificationDate;
                 listTask.ModifiedById = dbTask.ModifiedById;
+                if (listTask.ModifiedById != null)
+                    listTask.ModifiedByString = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.ModifiedById).Name + " " + dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.ModifiedById).Surname;
                 listTask.FinishedDate = dbTask.FinishedDate;
                 listTask.IsActive = dbTask.IsActive;
                 listTask.Details = dbTask.Details;
@@ -112,12 +119,8 @@ namespace TaskManager.Repository
 
             if (dbTask != null)
             {
-                dbTask.CreatedById = taskModel.CreatedById;
-                dbTask.CreationDate = taskModel.CreationDate;
                 dbTask.StartDate = taskModel.StartDate;
-                dbTask.EditableStartDate = taskModel.EditableStartDate;
                 dbTask.EndDate = taskModel.EndDate;
-                dbTask.EditableEndDate = taskModel.EditableEndDate;
                 dbTask.AssignedToId = taskModel.AssignedToId;
                 dbTask.ModificationDate = taskModel.ModificationDate;
                 dbTask.ModifiedById = taskModel.ModifiedById;
@@ -153,6 +156,7 @@ namespace TaskManager.Repository
             }
             return task;
         }
+
 
         public void DeleteTask(Guid idTask)
         {

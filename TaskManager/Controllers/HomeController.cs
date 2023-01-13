@@ -8,6 +8,8 @@ namespace TaskManager.Controllers
 {
     public class HomeController : Controller
     {
+        private Repository.EmployeeRepository _employeeRepository;
+
         private readonly ILogger<HomeController> _logger;
 
 
@@ -21,6 +23,7 @@ namespace TaskManager.Controllers
 
         public IActionResult Index()
         {
+            //bool employeeData = _employeeRepository.GetAllEmployees() != null ? true : false;   
             return View();
         }
 

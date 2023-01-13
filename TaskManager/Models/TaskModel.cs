@@ -8,8 +8,11 @@ namespace TaskManager.Models
         [Display(Name = "Task Id")]
         public Guid IdTask { get; set; }
 
-        [Display(Name = "Created By")]
         public Guid CreatedById { get; set; }
+
+        [Display(Name = "Created By")]
+        public string? CreatedByString { get; set; }
+
 
         [Display(Name = "Created At")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
@@ -33,7 +36,7 @@ namespace TaskManager.Models
         [Display(Name = "Editable End Date")]
         public bool EditableEndDate { get; set; }
 
-        public Guid? AssignedToId { get; set; }
+        public Guid AssignedToId { get; set; }
 
         [Display(Name = "Assigned To")]
         public string? AssignedToString { get; set; }
@@ -43,8 +46,11 @@ namespace TaskManager.Models
         [DataType(DataType.Date)]
         public DateTime? ModificationDate { get; set; }
 
-        [Display(Name = "Modified By")]
         public Guid? ModifiedById { get; set; }
+
+        [Display(Name = "Modified By")]
+        public string? ModifiedByString { get; set; }
+
 
         [Display(Name = "Finished Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
@@ -61,7 +67,6 @@ namespace TaskManager.Models
         [Display(Name = "Has Attachments")]
         public bool HasAttachments { get; set; }
 
-        //public IEnumerable<SelectListItem> Users { get; set; }
 
     }
 }

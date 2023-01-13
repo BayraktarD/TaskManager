@@ -15,7 +15,7 @@ namespace TaskManager.Models.DBObjects
         public Guid IdEmployee { get; set; }
         public string Name { get; set; } = null!;
         public string Surname { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public string? UserId { get; set; }
         public bool IsActive { get; set; }
         public string Email { get; set; } = null!;
         public bool CanCreateTasks { get; set; }

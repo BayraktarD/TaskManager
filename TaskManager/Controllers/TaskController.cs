@@ -54,48 +54,50 @@ namespace TaskManager.Controllers
 
                 Guid assignedTo;
 
+                var loggedUser = User.Claims.Select(x => x.Value).ToArray()[0];
 
-                // trebuie dezvoltat dupa ce se creaza login-ul
-                Guid.TryParse("3f52c669-1282-4276-926d-a5624133069d", out Guid hardCodeCreatedById);
-
-                model.CreatedById = hardCodeCreatedById;
-                //------------------------------------------------------------------------------------
-
-
-                string userListAssignedToSelectedValue;
-                string ddlUserListName = "UsersList";
-
-                GetGuidFromDdl(collection, ddlUserListName, out userListAssignedToSelectedValue);
-
-
-                if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
+                if (Guid.TryParse(loggedUser, out Guid userId))
                 {
-                    model.AssignedToId = assignedTo;
+                    model.CreatedById = _employeeRepository.GetEmployeeByUserId(userId).IdEmployee;
 
-                    //model.AssignedToString = "";
-                    //model.ModificationDate = model.EndDate;
-                    //model.ModifiedById = assignedTo;
 
-                    model.CreationDate = DateTime.Now.Date;
+                    string userListAssignedToSelectedValue = Request.Form["UsersList"].ToString();
 
-                    var task = TryUpdateModelAsync(model);
-                    task.Wait();
-
-                    if (task.Result)
+                    if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
                     {
-                        _repository.InsertTask(model);
+                        model.AssignedToId = assignedTo;
+
+
+
+                        model.CreationDate = DateTime.Now.Date;
+
+                        var task = TryUpdateModelAsync(model);
+                        task.Wait();
+
+                        if (task.Result)
+                        {
+                            _repository.InsertTask(model);
+                        }
+                        return RedirectToAction("Index");
                     }
-                    return View("Index");
+                    else
+                    {
+                        SelectCategory(null, null);
+                        return View("TaskCreate");
+
+                    }
 
                 }
                 else
                 {
+                    SelectCategory(null, null);
                     return View("TaskCreate");
                 }
 
             }
             catch
             {
+                SelectCategory(null, null);
                 return View("TaskCreate");
 
             }
@@ -118,16 +120,20 @@ namespace TaskManager.Controllers
             {
                 Models.TaskModel model = new Models.TaskModel();
 
-                Guid assignedTo;
+                var loggedUser = User.Claims.Select(x => x.Value).ToArray()[0];
 
                 string userListAssignedToSelectedValue;
-                string ddlUserListName = "UsersList";
 
-                GetGuidFromDdl(collection, ddlUserListName, out userListAssignedToSelectedValue);
+                Guid assignedTo;
 
+                userListAssignedToSelectedValue = Request.Form["UsersList"].ToString();
 
-                if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
+                if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo) && Guid.TryParse(loggedUser, out Guid userId))
                 {
+                    model.ModificationDate = DateTime.Now;
+                    model.AssignedToId = assignedTo;
+                    model.ModifiedById = _employeeRepository.GetEmployeeByUserId(userId).IdEmployee;
+
                     var task = TryUpdateModelAsync(model);
                     task.Wait();
                     if (task.Result)
@@ -140,13 +146,12 @@ namespace TaskManager.Controllers
                         return RedirectToAction("Index", id);
                     }
                 }
-
                 else
                 {
                     return RedirectToAction("Index", id);
                 }
-
             }
+
             catch
             {
                 return RedirectToAction("Index", id);
@@ -215,7 +220,7 @@ namespace TaskManager.Controllers
             {
                 userList.Add(new SelectListItem
                 {
-                    Text = item.Name.ToString() + item.Surname.ToString(),
+                    Text = item.Name.ToString() + " " + item.Surname.ToString(),
                     Value = item.IdEmployee.ToString()
                 });
             }

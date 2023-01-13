@@ -12,20 +12,17 @@
 
 <h4>TaskModel</h4>
 <hr />
+@if (ViewData.ModelState.Values.Any(x => x.Errors.Count >= 1))
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary()
+    </div>
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CreatedById" class="control-label"></label>
-                <input asp-for="CreatedById" class="form-control" />
-                <span asp-validation-for="CreatedById" class="text-danger"></span>
-            </div>
-            @*<div class="form-group">
-                <label asp-for="CreationDate" class="control-label"></label>
-                <input asp-for="CreationDate" class="form-control" />
-                <span asp-validation-for="CreationDate" class="text-danger"></span>
-            </div>*@
+
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
@@ -47,26 +44,22 @@
                 </label>
             </div>
             <div class="form-group">
+                <label asp-for="Details" class="control-label"></label>
+                <input asp-for="Details" class="form-control" />
+                <span asp-validation-for="Details" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="AssignedToString" class="control-label"></label>
                 @*<input asp-for="AssignedToId" class="form-control" />*@
                 <br />
                 @Html.DropDownList("UsersList")
                 <span asp-validation-for="AssignedToString" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="FinishedDate" class="control-label"></label>
-                <input asp-for="FinishedDate" class="form-control" />
-                <span asp-validation-for="FinishedDate" class="text-danger"></span>
-            </div>
+
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
                 </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Details" class="control-label"></label>
-                <input asp-for="Details" class="form-control" />
-                <span asp-validation-for="Details" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">

@@ -38,6 +38,16 @@ namespace TaskManager.Repository
             return model;
         }
 
+        public EmployeeModel GetEmployeeByUserId(Guid id)
+        {
+            EmployeeModel model = new EmployeeModel();
+
+            var employee = dbContext.Employees.FirstOrDefault(x => x.UserId == id.ToString());
+            model = MapDbObjectToModel(employee);
+
+            return model;
+        }
+
         public EmployeeModel MapDbObjectToModel(Employee dbObject)
         {
             EmployeeModel model = new EmployeeModel();
@@ -65,7 +75,7 @@ namespace TaskManager.Repository
             return model;
         }
 
-        public void InsertUser(EmployeeModel model)
+        public void InsertEmployee(EmployeeModel model)
         {
             if (model != null)
             {
@@ -75,14 +85,14 @@ namespace TaskManager.Repository
             }
         }
 
-        public void UpdateUser(EmployeeModel model)
+        public void UpdateEmployee(EmployeeModel model)
         {
             Employee dbObject = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == model.IdEmployee);
             if (dbObject != null)
             {
                 dbObject.Name = model.Name;
                 dbObject.Surname = model.Surname;
-                //dbObject.UserId = model.UserId;
+                dbObject.UserId = model.UserId;
                 dbObject.IsActive = model.IsActive;
                 dbObject.Email = model.Email;
                 dbObject.CanCreateTasks = model.CanCreateTasks;
@@ -124,7 +134,7 @@ namespace TaskManager.Repository
             return dbObject;
         }
 
-        public void DeactivateUser(Guid id)
+        public void DeactivateEmployee(Guid id)
         {
             Employee employee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == id);
             if (employee != null)
@@ -134,7 +144,7 @@ namespace TaskManager.Repository
             }
         }
 
-        public void DeleteUser(Guid id)
+        public void DeleteEmployee(Guid id)
         {
             Employee employee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == id);
             if (employee != null)

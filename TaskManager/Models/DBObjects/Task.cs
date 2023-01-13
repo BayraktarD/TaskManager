@@ -17,7 +17,7 @@ namespace TaskManager.Models.DBObjects
         public bool EditableStartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool EditableEndDate { get; set; }
-        public Guid? AssignedToId { get; set; }
+        public Guid AssignedToId { get; set; }
         public DateTime? ModificationDate { get; set; }
         public Guid? ModifiedById { get; set; }
         public DateTime? FinishedDate { get; set; }
@@ -25,7 +25,7 @@ namespace TaskManager.Models.DBObjects
         public string Details { get; set; } = null!;
         public bool HasAttachments { get; set; }
 
-        public virtual Employee? AssignedTo { get; set; }
+        public virtual Employee AssignedTo { get; set; } = null!;
         public virtual Employee CreatedBy { get; set; } = null!;
         public virtual Employee? ModifiedBy { get; set; }
         public virtual ICollection<TaskAttachment> TaskAttachments { get; set; }

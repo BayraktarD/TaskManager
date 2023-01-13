@@ -214,6 +214,7 @@ namespace TaskManager.Data
                 entity.HasOne(d => d.AssignedTo)
                     .WithMany(p => p.TaskAssignedTos)
                     .HasForeignKey(d => d.AssignedToId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Tasks_Users_AssignedTo");
 
                 entity.HasOne(d => d.CreatedBy)

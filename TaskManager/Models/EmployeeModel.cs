@@ -15,7 +15,7 @@ namespace TaskManager.Models
         public string Surname { get; set; } = null!;
 
         [Display(Name = "User Id")]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; }

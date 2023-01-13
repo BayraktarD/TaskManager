@@ -9,6 +9,7 @@
 
 <p>
     <a asp-action="Create">Create New</a>
+
 </p>
 <table class="table">
     <thead>
@@ -17,40 +18,19 @@
                 @Html.DisplayNameFor(model => model.IdTask)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedById)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.CreationDate)
+                @Html.DisplayNameFor(model => model.CreatedByString)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.StartDate)
             </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.EditableStartDate)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.EditableEndDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.AssignedToString)
             </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.ModificationDate)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.ModifiedById)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.FinishedDate)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th hidden>
-                @Html.DisplayNameFor(model => model.Details)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.HasAttachments)
@@ -64,40 +44,22 @@
                 @Html.DisplayFor(modelItem => item.IdTask)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedById)
+                    @Html.DisplayFor(modelItem => item.CreatedByString)
             </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.CreationDate)
-            </td>
+                
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.EditableStartDate)
-            </td>
+            
                 <td>
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.EditableEndDate)
-            </td>
+               
                 <td>
                 @Html.DisplayFor(modelItem => item.AssignedToString)
             </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.ModificationDate)
-            </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.ModifiedById)
-            </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.FinishedDate)
-            </td>
+               
             <td>
                 @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-                <td hidden>
-                @Html.DisplayFor(modelItem => item.Details)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.HasAttachments)

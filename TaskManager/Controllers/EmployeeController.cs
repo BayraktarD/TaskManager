@@ -14,6 +14,8 @@ namespace TaskManager.Controllers
         private Repository.EmployeeRepository _repository;
         private Repository.DepartmentRepository _departmentRepository;
         private Repository.JobTitleRepository _jobTitlesRepository;
+        private Repository.EmployeeRepository _employeesRepository;
+
 
 
 
@@ -23,6 +25,8 @@ namespace TaskManager.Controllers
             _repository = new Repository.EmployeeRepository(dbContext);
             _departmentRepository = new Repository.DepartmentRepository(dbContext);
             _jobTitlesRepository = new Repository.JobTitleRepository(dbContext);
+            _employeesRepository = new Repository.EmployeeRepository(dbContext);
+
 
         }
 
@@ -31,8 +35,8 @@ namespace TaskManager.Controllers
         // GET: EmployeeController
         public ActionResult Index()
         {
-            var users = _repository.GetAllEmployees();
-            return View("Index", users);
+            var employees = _repository.GetAllEmployees();
+            return View("Index", employees);
         }
 
         // GET: EmployeeController/Details/5
@@ -63,15 +67,8 @@ namespace TaskManager.Controllers
 
                 string jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                string  ddlJobTitles, ddlDepartments;
-
-                ddlJobTitles = "JobTitlesList";
-                ddlDepartments = "DepartmentsList";
-
-
-                GetGuidFromDdl(collection, ddlJobTitles, out jobTypesListSelectedValue);
-                GetGuidFromDdl(collection, ddlDepartments, out departemntsListSelectedValue);
-
+                jobTypesListSelectedValue = Request.Form["JobTitlesList"].ToString();
+                departemntsListSelectedValue = Request.Form["DepartmentsList"].ToString();
 
                 if (Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
                     && Guid.TryParse(departemntsListSelectedValue, out department)
@@ -80,23 +77,34 @@ namespace TaskManager.Controllers
                     model.JobTitle = jobTitle;
                     model.Department = department;
 
+                    model.JobTitleString = jobTitle.ToString();
+                    model.DepartmentString = department.ToString();
+
+
                     var task = TryUpdateModelAsync(model);
                     task.Wait();
                     if (task.Result)
                     {
-                        _repository.InsertUser(model);
+                        _repository.InsertEmployee(model);
+                        return RedirectToAction("Index");
                     }
-                    return RedirectToAction("Index");
+
+                    SelectCategory(null, null, null, null);
+
+                    return View("EmployeeCreate");
+
                 }
                 else
                 {
-                    return RedirectToAction("EmployeeCreate");
+                    SelectCategory(null, null, null, null);
+                    return View("EmployeeCreate");
                 };
 
             }
             catch
             {
-                return RedirectToAction("EmployeeCreate");
+                SelectCategory(null, null, null, null);
+                return View("EmployeeCreate");
             }
         }
 
@@ -119,19 +127,15 @@ namespace TaskManager.Controllers
             try
             {
                 Models.EmployeeModel model = new Models.EmployeeModel();
-                Guid  jobTitle, department;
-                string  jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                string  ddlJobTitles, ddlDepartments;
-
-                ddlJobTitles = "JobTitlesList";
-                ddlDepartments = "DepartmentsList";
+                Guid jobTitle, department;
+                string jobTypesListSelectedValue, departemntsListSelectedValue;
 
 
-                GetGuidFromDdl(collection, ddlJobTitles, out jobTypesListSelectedValue);
-                GetGuidFromDdl(collection, ddlDepartments, out departemntsListSelectedValue);
+                jobTypesListSelectedValue = Request.Form["JobTitlesList"].ToString();
+                departemntsListSelectedValue = Request.Form["DepartmentsList"].ToString();
 
-                if ( Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
+                if (Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
                     && Guid.TryParse(departemntsListSelectedValue, out department)
                     )
                 {
@@ -147,7 +151,7 @@ namespace TaskManager.Controllers
                 task.Wait();
                 if (task.Result)
                 {
-                    _repository.UpdateUser(model);
+                    _repository.UpdateEmployee(model);
                     return RedirectToAction("Index");
                 }
                 else
@@ -160,6 +164,7 @@ namespace TaskManager.Controllers
                 return RedirectToAction("Index", id);
             }
         }
+
 
         private static void GetGuidFromDdl(IFormCollection collection, string ddlName, out string output)
         {
@@ -189,7 +194,7 @@ namespace TaskManager.Controllers
         {
             try
             {
-                _repository.DeleteUser(id);
+                _repository.DeleteEmployee(id);
                 return RedirectToAction("Index");
             }
             catch
@@ -262,6 +267,26 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.JobTitlesList = jobTitlesList;
+
+
+            List<SelectListItem> employees = new List<SelectListItem>();
+
+            employees.Add(new SelectListItem
+            {
+                Text = "---Select Job Title---",
+                Value = "-1"
+            });
+
+            foreach (var item in _employeesRepository.GetAllEmployees())
+            {
+                employees.Add(new SelectListItem
+                {
+                    Text = item.Name + item.Surname,
+                    Value = item.IdEmployee.ToString()
+                });
+            }
+
+            ViewBag.Employees = employees;
             return View();
         }
     }
