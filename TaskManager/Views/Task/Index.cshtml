@@ -5,12 +5,23 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<style>
+    .disabled {
+        color: gray;
+        pointer-events: none;
+    }
+</style>
+
+<h1>Tasks</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="@(ViewBag.CanEdit ? "enabled" : "disabled")">Create New</a>
 
 </p>
+
+<h2>Assigned to me</h2>
+
+<h3>To Accomplish</h3>
 <table class="table">
     <thead>
         <tr>
@@ -33,43 +44,190 @@
                 @Html.DisplayNameFor(model => model.IsActive)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HasAttachments)
+                @Html.DisplayNameFor(model => model.TaskDetails)
             </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdTask)
-            </td>
-            <td>
+        @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.FinishedDate == null))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdTask)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.CreatedByString)
-            </td>
-                
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            
+                </td>
+
                 <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-               
+                    @Html.DisplayFor(modelItem => item.StartDate)
+
                 <td>
-                @Html.DisplayFor(modelItem => item.AssignedToString)
-            </td>
-               
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HasAttachments)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new {  id=item.IdTask  }) |
-                @Html.ActionLink("Details", "Details", new { id=item.IdTask }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.IdTask })
-            </td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.AssignedToString)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.TaskDetails)
+                </td>
+                <td>
+
+                        @Html.ActionLink("Details", "Details", new { id=item.IdTask }) |
+                        @Html.ActionLink("Finish", "Finish", new { id=item.IdTask })
+
+                   
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<br />
+<br />
+
+<h3>Done</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdTask)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedByString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedToString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskDetails)
+            </th>
         </tr>
-}
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.FinishedDate != null))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdTask)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedByString)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.AssignedToString)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.TaskDetails)
+                </td>
+                <td>
+
+                        @Html.ActionLink("Details", "Details", new { id=item.IdTask }) |
+                        @Html.ActionLink("Finish", "Finish", new { id=item.IdTask })
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<h2>Created by me</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdTask)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedByString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedToString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskDetails)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Where(x => x.CreatedById == ViewBag.EmployeeId))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdTask)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedByString)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.AssignedToString)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.TaskDetails)
+                </td>
+                <td>
+
+                        @Html.ActionLink("Edit", "Edit", new {  id=item.IdTask  },new { @class = ViewBag.CanEdit ? "enabled" : "disabled" }) |
+                        @Html.ActionLink("Details", "Details", new { id=item.IdTask }) |
+                        @Html.ActionLink("Delete", "Delete", new { id=item.IdTask } ,new { @class = ViewBag.CanDelete ? "enabled" : "disabled" })
+
+
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

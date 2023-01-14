@@ -14,7 +14,6 @@ namespace TaskManager.Controllers
         private Repository.EmployeeRepository _repository;
         private Repository.DepartmentRepository _departmentRepository;
         private Repository.JobTitleRepository _jobTitlesRepository;
-        private Repository.EmployeeRepository _employeesRepository;
 
 
 
@@ -25,21 +24,35 @@ namespace TaskManager.Controllers
             _repository = new Repository.EmployeeRepository(dbContext);
             _departmentRepository = new Repository.DepartmentRepository(dbContext);
             _jobTitlesRepository = new Repository.JobTitleRepository(dbContext);
-            _employeesRepository = new Repository.EmployeeRepository(dbContext);
-
-
         }
 
+        public EmployeeModel LoggedEmployee { get; set; }
 
+        private EmployeeModel GetLoggedEmployee()
+        {
+            var loggedUser = User.Claims.Select(x => x.Value).ToArray()[0];
+            Guid.TryParse(loggedUser, out Guid userId);
+            LoggedEmployee = _repository.GetEmployeeByUserId(userId);
+            return LoggedEmployee;
+        }
 
         // GET: EmployeeController
         public ActionResult Index()
         {
-            var employees = _repository.GetAllEmployees();
+            GetLoggedEmployee();
+            GetPermissions();
+            var employees = _repository.GetAllEmployees(LoggedEmployee.IdEmployee);
             return View("Index", employees);
         }
+      
+        private void GetPermissions()
+        {
+            ViewBag.CanCreate = LoggedEmployee.CanCreateProfiles;
+            ViewBag.CanEdit = LoggedEmployee.CanModifyProfiles;
+            ViewBag.CanDelete = LoggedEmployee.CanDeleteProfiles;
+        }
 
-        // GET: EmployeeController/Details/5
+        // GET: EmployeeController/TaskDetails/5
         public ActionResult Details(Guid id)
         {
             var user = _repository.GetEmployeeById(id);
@@ -74,6 +87,7 @@ namespace TaskManager.Controllers
                     && Guid.TryParse(departemntsListSelectedValue, out department)
                     )
                 {
+                    
                     model.JobTitle = jobTitle;
                     model.Department = department;
 
@@ -166,20 +180,6 @@ namespace TaskManager.Controllers
         }
 
 
-        private static void GetGuidFromDdl(IFormCollection collection, string ddlName, out string output)
-        {
-            output = collection.FirstOrDefault(x => x.Key == ddlName).ToString();
-            output = GetDdlValue(output);
-        }
-
-        private static string GetDdlValue(string input)
-        {
-            string output = input
-                .Substring(input.IndexOf(',') + 1,
-                            input.IndexOf(']') - input.Substring(0, input.IndexOf(',')).Length - 1).Trim();
-            return output;
-        }
-
         // GET: EmployeeController/Delete/5
         public ActionResult Delete(Guid id)
         {
@@ -202,6 +202,8 @@ namespace TaskManager.Controllers
                 return RedirectToAction("EmployeeDelete", id);
             }
         }
+
+
 
         public ActionResult SelectCategory(string departmentText, string departmentValue, string jobTitleText, string jobTitleValue)
         {
@@ -277,7 +279,7 @@ namespace TaskManager.Controllers
                 Value = "-1"
             });
 
-            foreach (var item in _employeesRepository.GetAllEmployees())
+            foreach (var item in _repository.GetAllEmployees(GetLoggedEmployee().IdEmployee))
             {
                 employees.Add(new SelectListItem
                 {

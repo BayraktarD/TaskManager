@@ -14,8 +14,8 @@ namespace TaskManager.Models
         [Display(Name = "Attachment")]
         public byte[] Attachment { get; set; } = null!;
 
-        [Display(Name = "Attachment Type")]
-        public Guid AttachmentType { get; set; }
+        [Display(Name = "Attachment name")]
+        public string AttachmentName { get; set; }
 
     }
 }

@@ -11,7 +11,7 @@ namespace TaskManager.Controllers
             return View("Index");
         }
 
-        // GET: AdminController/Details/5
+        // GET: AdminController/TaskDetails/5
         public ActionResult Details(int id)
         {
             return View();

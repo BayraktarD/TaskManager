@@ -201,15 +201,17 @@ namespace TaskManager.Data
 
                 entity.Property(e => e.CreationDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Details).HasMaxLength(1000);
-
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.FinishedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ModificationDate).HasColumnType("datetime");
 
+                entity.Property(e => e.SolutionDetails).HasMaxLength(1000);
+
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.TaskDetails).HasMaxLength(1000);
 
                 entity.HasOne(d => d.AssignedTo)
                     .WithMany(p => p.TaskAssignedTos)
@@ -236,11 +238,7 @@ namespace TaskManager.Data
 
                 entity.ToTable("TaskAttachment");
 
-                entity.HasOne(d => d.AttachmentTypeNavigation)
-                    .WithMany(p => p.TaskAttachments)
-                    .HasForeignKey(d => d.AttachmentType)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TaskAttachment_AttachmentTypes");
+                entity.Property(e => e.AttachmentName).HasMaxLength(250);
 
                 entity.HasOne(d => d.IdTaskNavigation)
                     .WithMany(p => p.TaskAttachments)
@@ -248,7 +246,6 @@ namespace TaskManager.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TaskAttachment_Tasks");
             });
-
             base.OnModelCreating(modelBuilder);
             OnModelCreatingPartial(modelBuilder);
         }

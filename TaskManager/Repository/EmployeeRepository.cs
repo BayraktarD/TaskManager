@@ -19,10 +19,10 @@ namespace TaskManager.Repository
             this.dbContext = dbContext;
         }
 
-        public List<EmployeeModel> GetAllEmployees()
+        public List<EmployeeModel> GetAllEmployees(Guid log)
         {
             List<EmployeeModel> models = new List<EmployeeModel>();
-            foreach (var dbModel in dbContext.Employees)
+            foreach (var dbModel in dbContext.Employees.Where(x=>x.IdEmployee != log))
             {
                 models.Add(MapDbObjectToModel(dbModel));
             }
@@ -57,20 +57,20 @@ namespace TaskManager.Repository
                 model.Name = dbObject.Name;
                 model.Surname = dbObject.Surname;
                 model.UserId = dbObject.UserId;
-               // model.UserTypeString = dbContext.UserTypes.FirstOrDefault(x => x.IdUserType == dbObject.UserType).UserType1.ToString();
-                model.IsActive = dbObject.IsActive;
+                if (model.UserId != null)
+                    model.IsActive = dbObject.IsActive;
                 model.Email = dbObject.Email;
                 model.CanCreateTasks = dbObject.CanCreateTasks;
                 model.CanAssignTasks = dbObject.CanAssignTasks;
-                model.CanUnassignTasks = dbObject.CanUnassignTasks;
+                model.CanModifyProfiles = dbObject.CanModifyProfiles;
                 model.CanDeleteTasks = dbObject.CanDeleteTasks;
-                model.CanActivateProfiles = dbObject.CanActivateProfiles;
-                model.CanDeactivateProfiles = dbObject.CanDeactivateProfiles;
+                model.CanCreateProfiles = dbObject.CanCreateProfiles;
+                model.CanDeleteProfiles = dbObject.CanDeleteProfiles;
                 model.CanModifyTasks = dbObject.CanModifyTasks;
                 model.JobTitle = dbObject.JobTitle;
                 model.JobTitleString = dbContext.JobTitles.FirstOrDefault(x => x.IdJobTitle == dbObject.JobTitle).JobTitle1.ToString();
                 model.Department = dbObject.Department;
-                model.DepartmentString = dbContext.Departments.FirstOrDefault(x=>x.IdDepartment == dbObject.Department).Department1.ToString();
+                model.DepartmentString = dbContext.Departments.FirstOrDefault(x => x.IdDepartment == dbObject.Department).Department1.ToString();
             }
             return model;
         }
@@ -93,14 +93,15 @@ namespace TaskManager.Repository
                 dbObject.Name = model.Name;
                 dbObject.Surname = model.Surname;
                 dbObject.UserId = model.UserId;
-                dbObject.IsActive = model.IsActive;
+                if (model.UserId != null)
+                    dbObject.IsActive = model.IsActive;
                 dbObject.Email = model.Email;
                 dbObject.CanCreateTasks = model.CanCreateTasks;
                 dbObject.CanAssignTasks = model.CanAssignTasks;
-                dbObject.CanUnassignTasks = model.CanUnassignTasks;
+                dbObject.CanModifyProfiles = model.CanModifyProfiles;
                 dbObject.CanDeleteTasks = model.CanDeleteTasks;
-                dbObject.CanActivateProfiles = model.CanActivateProfiles;
-                dbObject.CanDeactivateProfiles = model.CanDeactivateProfiles;
+                dbObject.CanCreateProfiles = model.CanCreateProfiles;
+                dbObject.CanDeleteProfiles = model.CanDeleteProfiles;
                 dbObject.CanModifyTasks = model.CanModifyTasks;
                 dbObject.JobTitle = model.JobTitle;
                 dbObject.Department = model.Department;
@@ -123,10 +124,10 @@ namespace TaskManager.Repository
                 dbObject.Email = model.Email;
                 dbObject.CanCreateTasks = model.CanCreateTasks;
                 dbObject.CanAssignTasks = model.CanAssignTasks;
-                dbObject.CanUnassignTasks = model.CanUnassignTasks;
+                dbObject.CanModifyProfiles = model.CanModifyProfiles;
                 dbObject.CanDeleteTasks = model.CanDeleteTasks;
-                dbObject.CanActivateProfiles = model.CanActivateProfiles;
-                dbObject.CanDeactivateProfiles = model.CanDeactivateProfiles;
+                dbObject.CanCreateProfiles = model.CanCreateProfiles;
+                dbObject.CanDeleteProfiles = model.CanDeleteProfiles;
                 dbObject.CanModifyTasks = model.CanModifyTasks;
                 dbObject.JobTitle = model.JobTitle;
                 dbObject.Department = model.Department;

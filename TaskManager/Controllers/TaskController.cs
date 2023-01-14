@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Repository;
+using System.Web;
+using TaskManager.Models.DBObjects;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace TaskManager.Controllers
 {
@@ -13,23 +16,53 @@ namespace TaskManager.Controllers
 
         private Repository.EmployeeRepository _employeeRepository;
 
+        private Repository.TaskAttachmentRepository _taskAttachmentsRepository;
+
+
 
         public TaskController(ApplicationDbContext dbContext)
         {
             _repository = new Repository.TaskRepository(dbContext);
 
             _employeeRepository = new Repository.EmployeeRepository(dbContext);
+
+            _taskAttachmentsRepository = new Repository.TaskAttachmentRepository(dbContext);
+
         }
 
+        public EmployeeModel LoggedEmployee { get; set; }
+
+
+        private EmployeeModel GetLoggedEmployee()
+        {
+            var loggedUser = User.Claims.Select(x => x.Value).ToArray()[0];
+            Guid.TryParse(loggedUser, out Guid userId);
+            LoggedEmployee = _employeeRepository.GetEmployeeByUserId(userId);
+
+            return LoggedEmployee;
+
+        }
 
         // GET: TaskController
         public ActionResult Index()
         {
-            var taskList = _repository.GetAllTasks();
-            return View("Index", taskList);
+            GetLoggedEmployee();
+            GetPermissions();
+
+            var tasks = _repository.GetAllEmployeeTasks(LoggedEmployee.IdEmployee);
+            ViewBag.EmployeeId = LoggedEmployee.IdEmployee;
+            return View("Index", tasks);
         }
 
-        // GET: TaskController/Details/5
+        private void GetPermissions()
+        {
+            ViewBag.CanCreate = LoggedEmployee.CanCreateTasks;
+            ViewBag.CanEdit = LoggedEmployee.CanModifyTasks;
+            ViewBag.CanDelete = LoggedEmployee.CanDeleteTasks;
+        }
+
+
+        // GET: TaskController/TaskDetails/5
         public ActionResult Details(Guid id)
         {
             var task = _repository.GetTasksById(id);
@@ -40,6 +73,7 @@ namespace TaskManager.Controllers
         public ActionResult Create()
         {
             SelectCategory(null, null);
+
             return View("TaskCreate");
         }
 
@@ -60,32 +94,27 @@ namespace TaskManager.Controllers
                 {
                     model.CreatedById = _employeeRepository.GetEmployeeByUserId(userId).IdEmployee;
 
-
                     string userListAssignedToSelectedValue = Request.Form["UsersList"].ToString();
 
                     if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
                     {
                         model.AssignedToId = assignedTo;
-
-
-
-                        model.CreationDate = DateTime.Now.Date;
-
-                        var task = TryUpdateModelAsync(model);
-                        task.Wait();
-
-                        if (task.Result)
-                        {
-                            _repository.InsertTask(model);
-                        }
-                        return RedirectToAction("Index");
                     }
                     else
                     {
-                        SelectCategory(null, null);
-                        return View("TaskCreate");
-
+                        model.AssignedToId = model.CreatedById;
                     }
+
+                    model.CreationDate = DateTime.Now.Date;
+
+                    var task = TryUpdateModelAsync(model);
+                    task.Wait();
+
+                    if (task.Result)
+                    {
+                        _repository.InsertTask(model);
+                    }
+                    return RedirectToAction("Index");
 
                 }
                 else
@@ -128,11 +157,21 @@ namespace TaskManager.Controllers
 
                 userListAssignedToSelectedValue = Request.Form["UsersList"].ToString();
 
-                if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo) && Guid.TryParse(loggedUser, out Guid userId))
+                if (Guid.TryParse(loggedUser, out Guid userId))
                 {
-                    model.ModificationDate = DateTime.Now;
-                    model.AssignedToId = assignedTo;
+
                     model.ModifiedById = _employeeRepository.GetEmployeeByUserId(userId).IdEmployee;
+                    model.ModificationDate = DateTime.Now;
+
+
+                    if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))
+                    {
+                        model.AssignedToId = assignedTo;
+                    }
+                    else
+                    {
+                        model.AssignedToId = _employeeRepository.GetEmployeeByUserId(userId).IdEmployee;
+                    }
 
                     var task = TryUpdateModelAsync(model);
                     task.Wait();
@@ -145,6 +184,7 @@ namespace TaskManager.Controllers
                     {
                         return RedirectToAction("Index", id);
                     }
+
                 }
                 else
                 {
@@ -158,19 +198,100 @@ namespace TaskManager.Controllers
             }
         }
 
-        private static void GetGuidFromDdl(IFormCollection collection, string ddlName, out string output)
+        // POST: TaskController/Finish
+        public ActionResult Finish(Guid id)
         {
-            output = collection.FirstOrDefault(x => x.Key == ddlName).ToString();
-            output = GetDdlValue(output);
+            var model = _repository.GetTasksById(id);
+            SelectCategory(model.AssignedToString, model.AssignedToId.ToString());
+            return View("FinishTask", model);
         }
 
-        private static string GetDdlValue(string input)
+        // POST: TaskController/Finish
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Finish(Guid id, IFormCollection collection, List<IFormFile> files)
         {
-            string output = input
-                .Substring(input.IndexOf(',') + 1,
-                            input.IndexOf(']') - input.Substring(0, input.IndexOf(',')).Length - 1).Trim();
-            return output;
+            try
+            {
+                Models.TaskModel model = _repository.GetTasksById(id);
+
+                model.FinishedDate = DateTime.Now;
+                model.IsActive = false;
+                if (files.Count > 0)
+                    model.HasAttachments = true;
+
+                var task = TryUpdateModelAsync(model);
+                task.Wait();
+                if (task.Result)
+                {
+                    var idTask = _repository.FinishTask(model);
+
+                    foreach (var file in files)
+                    {
+                        Models.TaskAttachmentModel taskAttachmentModel = new Models.TaskAttachmentModel();
+                        var output = Upload(file);
+
+                        taskAttachmentModel.IdTask = idTask;
+                        taskAttachmentModel.Attachment = output;
+                        taskAttachmentModel.AttachmentName = file.FileName;
+
+                        task = TryUpdateModelAsync(taskAttachmentModel);
+                        task.Wait();
+                        if (task.Result)
+                        {
+                            _taskAttachmentsRepository.InsertTaskAttachment(taskAttachmentModel);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", id);
+
+                        }
+
+                    }
+                    return RedirectToAction("Index");
+
+                }
+                else
+                {
+                    return RedirectToAction("Index", id);
+                }
+
+            }
+
+            catch
+            {
+                return RedirectToAction("Index", id);
+            }
         }
+
+
+        public byte[] Upload(IFormFile file)
+        {
+
+            using (var memoryStream = new MemoryStream())
+            {
+                file.CopyToAsync(memoryStream);
+                byte[] fileBytes = memoryStream.ToArray();
+
+                //store the file in the database
+                //using (var db = new YourDbContext())
+                //{
+                //    var fileModel = new FileModel
+                //    {
+                //        FileName = file.FileName,
+                //        ContentType = file.ContentType,
+                //        Data = fileBytes
+                //    };
+                //    db.Files.Add(fileModel);
+                //    db.SaveChanges();
+                //}
+                return fileBytes;
+            }
+        }
+
+
+
+
 
         // GET: TaskController/Delete/5
         public ActionResult Delete(Guid id)
@@ -216,7 +337,8 @@ namespace TaskManager.Controllers
                 });
             }
 
-            foreach (var item in _employeeRepository.GetAllEmployees().Where(x => x.IdEmployee.ToString() != employeeValue))
+            foreach (var item in _employeeRepository.GetAllEmployees(GetLoggedEmployee().IdEmployee)
+                .Where(x => x.IdEmployee.ToString() != employeeValue))
             {
                 userList.Add(new SelectListItem
                 {
@@ -226,6 +348,8 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.UsersList = userList;
+
+
             return View();
         }
     }

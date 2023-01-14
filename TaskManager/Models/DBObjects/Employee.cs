@@ -20,10 +20,10 @@ namespace TaskManager.Models.DBObjects
         public string Email { get; set; } = null!;
         public bool CanCreateTasks { get; set; }
         public bool CanAssignTasks { get; set; }
-        public bool CanUnassignTasks { get; set; }
+        public bool CanModifyProfiles { get; set; }
         public bool CanDeleteTasks { get; set; }
-        public bool CanActivateProfiles { get; set; }
-        public bool CanDeactivateProfiles { get; set; }
+        public bool CanCreateProfiles { get; set; }
+        public bool CanDeleteProfiles { get; set; }
         public bool CanModifyTasks { get; set; }
         public Guid JobTitle { get; set; }
         public Guid Department { get; set; }

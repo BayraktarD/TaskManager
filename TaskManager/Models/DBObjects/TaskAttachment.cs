@@ -8,9 +8,8 @@ namespace TaskManager.Models.DBObjects
         public Guid IdTask { get; set; }
         public Guid IdAttachment { get; set; }
         public byte[] Attachment { get; set; } = null!;
-        public Guid AttachmentType { get; set; }
+        public string AttachmentName { get; set; } = null!;
 
-        public virtual AttachmentType AttachmentTypeNavigation { get; set; } = null!;
         public virtual Task IdTaskNavigation { get; set; } = null!;
     }
 }

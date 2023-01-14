@@ -21,7 +21,7 @@ namespace TaskManager.Controllers
             return View("Index", departments);
         }
 
-        // GET: DepartmentController/Details/5
+        // GET: DepartmentController/TaskDetails/5
         public ActionResult Details(Guid id)
         {
             var model = _repository.GetDepartmentById(id);

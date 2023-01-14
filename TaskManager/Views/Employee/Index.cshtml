@@ -5,10 +5,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .disabled {
+        color: gray;
+        pointer-events: none;
+    }
+</style>
+
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="@(ViewBag.CanCreate ? "enabled" : "disabled")">Create New</a>
 
 </p>
 <table class="table">
@@ -21,9 +28,9 @@
                 @Html.DisplayNameFor(model => model.Name) @Html.DisplayNameFor(model => model.Surname)
             </th>
             @*<th>
-                @Html.DisplayNameFor(model => model.Surname)
+            @Html.DisplayNameFor(model => model.Surname)
             </th>*@
-            <th >
+            <th>
                 @Html.DisplayNameFor(model => model.UserId)
             </th>
             <th>
@@ -39,16 +46,16 @@
                 @Html.DisplayNameFor(model => model.CanAssignTasks)
             </th>
             <th hidden>
-                @Html.DisplayNameFor(model => model.CanUnassignTasks)
+                @Html.DisplayNameFor(model => model.CanModifyProfiles)
             </th>
             <th hidden>
                 @Html.DisplayNameFor(model => model.CanDeleteTasks)
             </th>
             <th hidden>
-                @Html.DisplayNameFor(model => model.CanActivateProfiles)
+                @Html.DisplayNameFor(model => model.CanCreateProfiles)
             </th>
             <th hidden>
-                @Html.DisplayNameFor(model => model.CanDeactivateProfiles)
+                @Html.DisplayNameFor(model => model.CanDeleteProfiles)
             </th>
             <th hidden>
                 @Html.DisplayNameFor(model => model.CanModifyTasks)
@@ -69,65 +76,66 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.IdEmployee)
-            </td>
-            <td>
+                    @Html.DisplayFor(modelItem => item.IdEmployee)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Surname) @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.Surname)
+                </td>
+                @*<td>
+            @Html.DisplayFor(modelItem => item.Surname)
             </td>*@
-            <td >
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanCreateTasks)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanCreateTasks)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanAssignTasks)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanAssignTasks)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanUnassignTasks)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanModifyProfiles)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanDeleteTasks)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanDeleteTasks)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanActivateProfiles)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanCreateProfiles)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanDeactivateProfiles)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanDeleteProfiles)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.CanModifyTasks)
-            </td>
+                    @Html.DisplayFor(modelItem => item.CanModifyTasks)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.JobTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.JobTitleString)
-            </td>
+                    @Html.DisplayFor(modelItem => item.JobTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JobTitleString)
+                </td>
                 <td hidden>
-                @Html.DisplayFor(modelItem => item.Department)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DepartmentString)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new {  id=item.IdEmployee  }) |
-                @Html.ActionLink("Details", "Details", new { id=item.IdEmployee }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.IdEmployee })
-            </td>
-        </tr>
-}
+                    @Html.DisplayFor(modelItem => item.Department)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DepartmentString)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new {  id=item.IdEmployee  }, new { @class = ViewBag.CanEdit ? "enabled" : "disabled" }) |
+                    @Html.ActionLink("TaskDetails", "TaskDetails", new { id=item.IdEmployee }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.IdEmployee },new { @class = ViewBag.CanDelete ? "enabled" : "disabled" })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

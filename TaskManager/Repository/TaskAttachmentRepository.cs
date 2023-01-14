@@ -38,7 +38,7 @@ namespace TaskManager.Repository
                 taskAttachmentModel.IdTask = taskAttachment.IdTask;
                 taskAttachmentModel.IdAttachment = taskAttachment.IdAttachment;
                 taskAttachmentModel.Attachment = taskAttachment.Attachment;
-                taskAttachmentModel.AttachmentType = taskAttachment.AttachmentType;
+                taskAttachmentModel.AttachmentName = taskAttachment.AttachmentName;
             }
             return taskAttachmentModel;
         }
@@ -60,7 +60,9 @@ namespace TaskManager.Repository
                                 && x.IdAttachment == taskAttachmentModel.IdAttachment);
             if (taskAttachment != null)
             {
-                dbContext.Add(MapModelToDbObject(taskAttachmentModel));
+                taskAttachment.Attachment = taskAttachmentModel.Attachment;
+                taskAttachment.AttachmentName = taskAttachmentModel.AttachmentName;
+                dbContext.Update(taskAttachment);
                 dbContext.SaveChanges();
             }
         }
@@ -73,7 +75,7 @@ namespace TaskManager.Repository
                 taskAttachment.IdTask = taskAttachmentModel.IdTask;
                 taskAttachment.IdAttachment = taskAttachmentModel.IdAttachment;
                 taskAttachment.Attachment = taskAttachmentModel.Attachment;
-                taskAttachment.AttachmentType = taskAttachmentModel.AttachmentType;
+                taskAttachment.AttachmentName = taskAttachmentModel.AttachmentName;
             }
             return taskAttachment;
         }

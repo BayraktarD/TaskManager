@@ -22,17 +22,18 @@ namespace TaskManager.Repository
 
         }
 
-        public List<TaskModel> GetAllTasks()
+        public List<TaskModel> GetAllEmployeeTasks(Guid idEmployee)
         {
             List<TaskModel> listTask = new List<TaskModel>();
 
-            foreach (var task in dbContext.Tasks)
+            foreach (var task in dbContext.Tasks.Where(x => x.AssignedToId == idEmployee || x.CreatedById == idEmployee))
             {
                 listTask.Add(MapDbObjectToModel(task));
             }
 
             return listTask;
         }
+
 
         public TaskModel GetTasksById(Guid id)
         {
@@ -100,7 +101,7 @@ namespace TaskManager.Repository
                     listTask.ModifiedByString = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.ModifiedById).Name + " " + dbContext.Employees.FirstOrDefault(x => x.IdEmployee == dbTask.ModifiedById).Surname;
                 listTask.FinishedDate = dbTask.FinishedDate;
                 listTask.IsActive = dbTask.IsActive;
-                listTask.Details = dbTask.Details;
+                listTask.TaskDetails = dbTask.TaskDetails;
                 listTask.HasAttachments = dbTask.HasAttachments;
             }
             return listTask;
@@ -119,14 +120,15 @@ namespace TaskManager.Repository
 
             if (dbTask != null)
             {
-                dbTask.StartDate = taskModel.StartDate;
-                dbTask.EndDate = taskModel.EndDate;
+                if (dbTask.EditableStartDate)
+                    dbTask.StartDate = taskModel.StartDate;
+                if (dbTask.EditableEndDate)
+                    dbTask.EndDate = taskModel.EndDate;
                 dbTask.AssignedToId = taskModel.AssignedToId;
                 dbTask.ModificationDate = taskModel.ModificationDate;
                 dbTask.ModifiedById = taskModel.ModifiedById;
-                dbTask.FinishedDate = taskModel.FinishedDate;
                 dbTask.IsActive = taskModel.IsActive;
-                dbTask.Details = taskModel.Details;
+                dbTask.TaskDetails = taskModel.TaskDetails;
                 dbTask.HasAttachments = taskModel.HasAttachments;
 
                 dbContext.Tasks.Update(dbTask);
@@ -147,11 +149,13 @@ namespace TaskManager.Repository
                 task.EndDate = taskModel.EndDate;
                 task.EditableEndDate = taskModel.EditableEndDate;
                 task.AssignedToId = taskModel.AssignedToId;
-                task.ModificationDate = taskModel.ModificationDate;
-                task.ModifiedById = taskModel.ModifiedById;
-                task.FinishedDate = taskModel.FinishedDate;
-                task.IsActive = taskModel.IsActive;
-                task.Details = taskModel.Details;
+
+                if (task.StartDate.Date == DateTime.Now.Date)
+                    task.IsActive = true;
+                else
+                    task.IsActive &= taskModel.IsActive;
+                task.TaskDetails = taskModel.TaskDetails;
+
                 task.HasAttachments = taskModel.HasAttachments;
             }
             return task;
@@ -167,6 +171,21 @@ namespace TaskManager.Repository
                 dbContext.Tasks.Remove(task);
                 dbContext.SaveChanges();
             }
+        }
+
+        public Guid FinishTask(TaskModel taskModel)
+        {
+            Models.DBObjects.Task task = dbContext.Tasks.Where(x => x.IdTask == taskModel.IdTask).FirstOrDefault();
+            if (task != null)
+            {
+                task.FinishedDate = taskModel.FinishedDate;
+                task.IsActive = taskModel.IsActive;
+                task.HasAttachments = taskModel.HasAttachments;
+
+                dbContext.Update(task);
+                dbContext.SaveChanges();
+            }
+            return task.IdTask;
         }
     }
 }

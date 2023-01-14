@@ -21,7 +21,7 @@ namespace TaskManager.Controllers
             return View("Index", jobTitles);
         }
 
-        // GET: JobTitlesController/Details/5
+        // GET: JobTitlesController/TaskDetails/5
         public ActionResult Details(Guid id)
         {
             var jobTitle = _repository.GetJobTitleById(id);

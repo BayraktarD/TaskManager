@@ -29,17 +29,17 @@ namespace TaskManager.Models
         [Display(Name = "Can Assign Tasks")]
         public bool CanAssignTasks { get; set; }
 
-        [Display(Name = "Can Unassign Tasks")]
-        public bool CanUnassignTasks { get; set; }
+        [Display(Name = "Can Modify Tasks")]
+        public bool CanModifyProfiles { get; set; }
 
         [Display(Name = "Can Delete Tasks")]
         public bool CanDeleteTasks { get; set; }
 
-        [Display(Name = "Can Activate Profiles")]
-        public bool CanActivateProfiles { get; set; }
+        [Display(Name = "Can Create Profiles")]
+        public bool CanCreateProfiles { get; set; }
 
-        [Display(Name = "Can Deactivate Profiles")]
-        public bool CanDeactivateProfiles { get; set; }
+        [Display(Name = "Can Delete Profiles")]
+        public bool CanDeleteProfiles { get; set; }
 
         [Display(Name = "Can Modify Tasks")]
         public bool CanModifyTasks { get; set; }

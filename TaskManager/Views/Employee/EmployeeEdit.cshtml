@@ -33,11 +33,11 @@
                 <input asp-for="UserId" class="form-control" />
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
+           @* <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
                 </label>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
@@ -55,7 +55,7 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="CanUnassignTasks" /> @Html.DisplayNameFor(model => model.CanUnassignTasks)
+                    <input class="form-check-input" asp-for="CanModifyProfiles" /> @Html.DisplayNameFor(model => model.CanModifyProfiles)
                 </label>
             </div>
             <div class="form-group form-check">
@@ -65,12 +65,12 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="CanActivateProfiles" /> @Html.DisplayNameFor(model => model.CanActivateProfiles)
+                    <input class="form-check-input" asp-for="CanCreateProfiles" /> @Html.DisplayNameFor(model => model.CanCreateProfiles)
                 </label>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="CanDeactivateProfiles" /> @Html.DisplayNameFor(model => model.CanDeactivateProfiles)
+                    <input class="form-check-input" asp-for="CanDeleteProfiles" /> @Html.DisplayNameFor(model => model.CanDeleteProfiles)
                 </label>
             </div>
             <div class="form-group form-check">

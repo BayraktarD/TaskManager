@@ -22,7 +22,7 @@ namespace TaskManager.Repository
         {
             List<JobTitlesModel> jobTitlesModel = new List<JobTitlesModel>();
 
-            foreach (var jobTitle in dbContext.JobTitles)
+            foreach (var jobTitle in dbContext.JobTitles.OrderBy(x=>x.JobTitle1))
             {
                 jobTitlesModel.Add(MapDbObjectToModel(jobTitle));
             }

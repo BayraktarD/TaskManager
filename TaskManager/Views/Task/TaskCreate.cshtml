@@ -44,15 +44,21 @@
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="Details" class="control-label"></label>
-                <input asp-for="Details" class="form-control" />
-                <span asp-validation-for="Details" class="text-danger"></span>
+                <label asp-for="TaskDetails" class="control-label"></label>
+                <input asp-for="TaskDetails" class="form-control" />
+                <span asp-validation-for="TaskDetails" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="AssignedToString" class="control-label"></label>
                 @*<input asp-for="AssignedToId" class="form-control" />*@
                 <br />
+               @* @{
+                    bool? isEnabled = ViewBag.CanAssign as bool?;
+
+                }*@
                 @Html.DropDownList("UsersList")
+                @*@Html.DropDownList("UsersList", (IEnumerable<SelectListItem>)ViewBag.UsersList, new { disabled = isEnabled.HasValue && isEnabled.Value ? null : "disabled" })*@
+
                 <span asp-validation-for="AssignedToString" class="text-danger"></span>
             </div>
 

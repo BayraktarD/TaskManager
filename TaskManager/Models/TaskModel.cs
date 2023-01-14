@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using TaskManager.Models.DBObjects;
 
 namespace TaskManager.Models
 {
@@ -60,12 +61,18 @@ namespace TaskManager.Models
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; }
 
-        [Display(Name = "Details")]
+        [Display(Name = "Task Details")]
         [StringLength(1000, ErrorMessage = "String too long(max. 1000 chars)")]
-        public string Details { get; set; } = null!;
+        public string TaskDetails { get; set; } = null!;
+
+        [Display(Name = "Solution Details")]
+        [StringLength(1000, ErrorMessage = "String too long(max. 1000 chars)")]
+        public string? SolutionDetails { get; set; } = null!;
 
         [Display(Name = "Has Attachments")]
         public bool HasAttachments { get; set; }
+
+        public virtual ICollection<TaskAttachmentModel>? TaskAttachments { get; set; }
 
 
     }

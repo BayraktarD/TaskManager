@@ -19,7 +19,7 @@ namespace TaskManager.Controllers
             return View("Index", attachmentTypes);
         }
 
-        // GET: AttachmentTypeController/Details/5
+        // GET: AttachmentTypeController/TaskDetails/5
         public ActionResult Details(Guid id)
         {
             Models.AttachmentTypeModel model = _repository.GetAttachmentTypeById(id);
