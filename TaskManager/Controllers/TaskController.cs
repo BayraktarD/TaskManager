@@ -80,7 +80,7 @@ namespace TaskManager.Controllers
         // POST: TaskController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(IFormCollection collection, List<IFormFile> files)
         {
             try
             {
@@ -112,9 +112,37 @@ namespace TaskManager.Controllers
 
                     if (task.Result)
                     {
-                        _repository.InsertTask(model);
+                        Guid idTask = _repository.InsertTask(model);
+
+                        foreach (var file in files)
+                        {
+                            Models.TaskAttachmentModel taskAttachmentModel = new Models.TaskAttachmentModel();
+                            var output = Upload(file);
+
+                            taskAttachmentModel.IdTask = idTask;
+                            taskAttachmentModel.Attachment = output;
+                            taskAttachmentModel.AttachmentName = file.FileName;
+
+                            task = TryUpdateModelAsync(taskAttachmentModel);
+                            task.Wait();
+                            if (task.Result)
+                            {
+                                _taskAttachmentsRepository.InsertTaskAttachment(taskAttachmentModel);
+                            }
+                            else
+                            {
+                                return RedirectToAction("Index");
+
+                            }
+                        }
+                        return RedirectToAction("Index");
+
                     }
-                    return RedirectToAction("Index");
+                    else
+                    {
+                        SelectCategory(null, null);
+                        return View("TaskCreate");
+                    }
 
                 }
                 else
@@ -122,7 +150,6 @@ namespace TaskManager.Controllers
                     SelectCategory(null, null);
                     return View("TaskCreate");
                 }
-
             }
             catch
             {
@@ -143,7 +170,7 @@ namespace TaskManager.Controllers
         // POST: TaskController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Guid id, IFormCollection collection)
+        public ActionResult Edit(Guid id, IFormCollection collection, List<IFormFile> files)
         {
             try
             {
@@ -177,7 +204,30 @@ namespace TaskManager.Controllers
                     task.Wait();
                     if (task.Result)
                     {
-                        _repository.UpdateTask(model);
+                        Guid idTask = _repository.UpdateTask(model);
+
+                        foreach (var file in files)
+                        {
+                            Models.TaskAttachmentModel taskAttachmentModel = new Models.TaskAttachmentModel();
+                            var output = Upload(file);
+
+                            taskAttachmentModel.IdTask = idTask;
+                            taskAttachmentModel.Attachment = output;
+                            taskAttachmentModel.AttachmentName = file.FileName;
+
+                            task = TryUpdateModelAsync(taskAttachmentModel);
+                            task.Wait();
+                            if (task.Result)
+                            {
+                                _taskAttachmentsRepository.InsertTaskAttachment(taskAttachmentModel);
+                                return RedirectToAction("Index");
+                            }
+                            else
+                            {
+                                return RedirectToAction("Index", id);
+
+                            }
+                        }
                         return RedirectToAction("Index");
                     }
                     else

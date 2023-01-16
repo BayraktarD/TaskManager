@@ -107,14 +107,15 @@ namespace TaskManager.Repository
             return listTask;
         }
 
-        public void InsertTask(TaskModel taskModel)
+        public Guid InsertTask(TaskModel taskModel)
         {
             taskModel.IdTask = Guid.NewGuid();
             dbContext.Add(MapModelToDbObject(taskModel));
             dbContext.SaveChanges();
+            return taskModel.IdTask;
         }
 
-        public void UpdateTask(TaskModel taskModel)
+        public Guid UpdateTask(TaskModel taskModel)
         {
             Models.DBObjects.Task dbTask = dbContext.Tasks.FirstOrDefault(x => x.IdTask == taskModel.IdTask);
 
@@ -134,6 +135,8 @@ namespace TaskManager.Repository
                 dbContext.Tasks.Update(dbTask);
                 dbContext.SaveChanges();
             }
+            return taskModel.IdTask;
+
         }
 
         public Models.DBObjects.Task MapModelToDbObject(TaskModel taskModel)

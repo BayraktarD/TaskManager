@@ -7,17 +7,50 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
+<script>
+    function displayFiles() {
+        var checkboxHasAttachments = document.getElementById("HasAttachments");
+        var input = document.getElementById("files");
+        var ul = document.getElementById("fileList");
+        while (ul.hasChildNodes()) {
+            ul.removeChild(ul.firstChild);
+        }
+        for (var i = 0; i < input.files.length; i++) {
+            var li = document.createElement("li");
+            li.innerHTML = input.files[i].name;
+            ul.appendChild(li);
+        }
+        checkboxHasAttachments.checked = true;
 
-<h1>TaskCreate</h1>
+        if (!ul.hasChildNodes()) {
+            var li = document.createElement("li");
+            li.innerHTML = 'No Files Selected';
+            ul.appendChild(li);
+            checkboxHasAttachments.checked = false;
 
-<h4>TaskModel</h4>
-<hr />
+        }
+
+    }
+
+    function clearFiles() {
+        var input = document.getElementById("files");
+        input.value = "";
+        displayFiles();
+    }
+</script>
+
 @if (ViewData.ModelState.Values.Any(x => x.Errors.Count >= 1))
 {
     <div class="alert alert-danger">
         @Html.ValidationSummary()
     </div>
 }
+
+<h1>TaskCreate</h1>
+
+<h4>TaskModel</h4>
+<hr />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -67,10 +100,16 @@
                     <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
                 </label>
             </div>
-            <div class="form-group form-check">
+            <div class="form-group form-check" hidden>
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="HasAttachments" /> @Html.DisplayNameFor(model => model.HasAttachments)
                 </label>
+            </div>
+            <div>
+                <input asp-for="TaskAttachments" type="file" name="files" class="form-control" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()" />
+                @*<input type="file" name="files" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()">*@
+                <ul id="fileList"></ul>
+                <input type="button" value="Clear" onclick="clearFiles()" class="form-control" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
