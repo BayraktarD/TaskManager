@@ -10,10 +10,12 @@ namespace TaskManager.Controllers
     public class MyProfileController : Controller
     {
         private Repository.EmployeeRepository _repository;
+        private readonly IConfiguration _configuration;
 
-        public MyProfileController(ApplicationDbContext dbContext)
+        public MyProfileController(ApplicationDbContext dbContext, IConfiguration configuration)
         {
-            _repository = new Repository.EmployeeRepository(dbContext);
+            _configuration = configuration;
+            _repository = new Repository.EmployeeRepository(dbContext,_configuration);
            
         }
 

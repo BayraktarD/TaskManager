@@ -5,6 +5,46 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+}
+<script>
+    function displayFiles() {
+        var checkboxHasAttachments = document.getElementById("HasAttachments");
+        var input = document.getElementById("files");
+        var ul = document.getElementById("fileList");
+        while (ul.hasChildNodes()) {
+            ul.removeChild(ul.firstChild);
+        }
+        for (var i = 0; i < input.files.length; i++) {
+            var li = document.createElement("li");
+            li.innerHTML = input.files[i].name;
+            ul.appendChild(li);
+        }
+        checkboxHasAttachments.checked = true;
+
+        if (!ul.hasChildNodes()) {
+            var li = document.createElement("li");
+            li.innerHTML = 'No Files Selected';
+            ul.appendChild(li);
+            checkboxHasAttachments.checked = false;
+
+        }
+
+    }
+
+    function clearFiles() {
+        var input = document.getElementById("files");
+        input.value = "";
+        displayFiles();
+    }
+</script>
+
+@if (ViewData.ModelState.Values.Any(x => x.Errors.Count >= 1))
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary()
+    </div>
+}
+
 <h1>TaskEdit</h1>
 
 <h4>TaskModel</h4>
@@ -66,13 +106,19 @@
                 <input asp-for="TaskDetails" class="form-control" />
                 <span asp-validation-for="TaskDetails" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
+            <div class="form-group form-check" hidden>
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="HasAttachments" /> @Html.DisplayNameFor(model => model.HasAttachments)
                 </label>
             </div>
-            <p>
-               </p>
+            <p></p>
+            <div>
+                <input asp-for="TaskAttachments" type="file" name="files" class="form-control" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()" />
+                @*<input type="file" name="files" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()">*@
+                <ul id="fileList"></ul>
+                <input type="button" value="Clear" onclick="clearFiles()" class="form-control" />
+                <p></p>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -81,7 +127,7 @@
 </div>
 <p></p>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a>|<a asp-action="Index">View attachments</a>
 </div>
 
 @section Scripts {

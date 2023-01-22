@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NuGet.Protocol.Core.Types;
 using TaskManager.Data;
 using TaskManager.Models;
@@ -15,13 +16,16 @@ namespace TaskManager.Controllers
         private Repository.DepartmentRepository _departmentRepository;
         private Repository.JobTitleRepository _jobTitlesRepository;
 
+        private readonly IConfiguration _configuration;
 
 
 
 
-        public EmployeeController(ApplicationDbContext dbContext)
+
+        public EmployeeController(ApplicationDbContext dbContext, IConfiguration configuration)
         {
-            _repository = new Repository.EmployeeRepository(dbContext);
+            _configuration = configuration;
+            _repository = new Repository.EmployeeRepository(dbContext, _configuration);
             _departmentRepository = new Repository.DepartmentRepository(dbContext);
             _jobTitlesRepository = new Repository.JobTitleRepository(dbContext);
         }
@@ -44,7 +48,7 @@ namespace TaskManager.Controllers
             var employees = _repository.GetAllEmployees(LoggedEmployee.IdEmployee);
             return View("Index", employees);
         }
-      
+
         private void GetPermissions()
         {
             ViewBag.CanCreate = LoggedEmployee.CanCreateProfiles;
@@ -87,7 +91,7 @@ namespace TaskManager.Controllers
                     && Guid.TryParse(departemntsListSelectedValue, out department)
                     )
                 {
-                    
+
                     model.JobTitle = jobTitle;
                     model.Department = department;
 
@@ -291,5 +295,6 @@ namespace TaskManager.Controllers
             ViewBag.Employees = employees;
             return View();
         }
+
     }
 }

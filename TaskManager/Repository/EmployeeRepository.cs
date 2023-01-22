@@ -1,28 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Models.DBObjects;
+using Microsoft.Extensions.Configuration;
+using System.Data.SqlClient;
 
 namespace TaskManager.Repository
 {
     public class EmployeeRepository
     {
+
         private ApplicationDbContext dbContext;
+
+        private readonly IConfiguration _configuration;
 
         public EmployeeRepository()
         {
             this.dbContext = new ApplicationDbContext();
         }
 
-        public EmployeeRepository(ApplicationDbContext dbContext)
+        public EmployeeRepository(ApplicationDbContext dbContext, IConfiguration configuration)
         {
             this.dbContext = dbContext;
+            _configuration= configuration;  
         }
 
         public List<EmployeeModel> GetAllEmployees(Guid log)
         {
             List<EmployeeModel> models = new List<EmployeeModel>();
-            foreach (var dbModel in dbContext.Employees.Where(x=>x.IdEmployee != log))
+            foreach (var dbModel in dbContext.Employees.Where(x => x.IdEmployee != log))
             {
                 models.Add(MapDbObjectToModel(dbModel));
             }
@@ -80,8 +88,13 @@ namespace TaskManager.Repository
             if (model != null)
             {
                 model.IdEmployee = Guid.NewGuid();
+
+                model.UserId = InsertNewUser(model.Email, model.Password);
                 dbContext.Add(MapModelToDbObject(model));
+
+
                 dbContext.SaveChanges();
+
             }
         }
 
@@ -153,6 +166,64 @@ namespace TaskManager.Repository
                 dbContext.Employees.Remove(employee);
                 dbContext.SaveChanges();
             }
+        }
+
+
+        public string InsertNewUser(string email, string password)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            using (SqlConnection connection = new SqlConnection())
+            {
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                Guid userId = Guid.NewGuid();
+
+                string userName = email;
+
+                string insert = @"Insert into AspNetUsers (Id,
+                                                            UserName,
+                                                            NormalizedUserName,
+                                                            Email,
+                                                            NormalizedEmail,
+                                                            EmailConfirmed,
+                                                            PasswordHash,
+                                                            PhoneNumberConfirmed,
+                                                            TwoFactorEnabled,
+                                                            LockoutEnabled,
+                                                            AccessFailedCount
+                                                            ) values("
+                                                        +"'"+ userId.ToString() + "', "
+                                                        + "'" + userName + "', "
+                                                        + "'" + userName.ToUpper() + "', "
+                                                        + "'" + email + "', "
+                                                        + "'" + email.ToUpper() + "', "
+                                                        + "1,"
+                                                        + "'" + password.GetHashCode()+"', "
+                                                        + "0" + ","
+                                                        + "0" + ","
+                                                        + "0" + ","
+                                                        + "0"
+                                                        + ")";
+
+                SqlCommand cmd = new SqlCommand(insert, connection);
+
+
+                var i = cmd.ExecuteNonQuery();
+
+
+                if (i > 0)
+                {
+                    string getInserted = @"select Id from AspNetUsers where Email = '" + email+"'";
+                    SqlCommand command = new SqlCommand(getInserted, connection);
+                    var result = command.ExecuteScalar().ToString();
+
+                    return result;
+                }
+            }
+
+            return null;
         }
     }
 }

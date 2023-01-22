@@ -14,14 +14,17 @@ namespace TaskManager.Models
         [Display(Name = "Surname")]
         public string Surname { get; set; } = null!;
 
+        [Display(Name = "Email")]
+        public string Email { get; set; } = null!;
+
         [Display(Name = "User Id")]
         public string? UserId { get; set; }
 
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; }
-
-        [Display(Name = "Email")]
-        public string Email { get; set; } = null!;
 
         [Display(Name = "Can Create Tasks")]
         public bool CanCreateTasks { get; set; }

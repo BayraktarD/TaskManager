@@ -17,17 +17,19 @@ namespace TaskManager.Controllers
         private Repository.EmployeeRepository _employeeRepository;
 
         private Repository.TaskAttachmentRepository _taskAttachmentsRepository;
+        private readonly IConfiguration _configuration;
 
 
 
-        public TaskController(ApplicationDbContext dbContext)
+        public TaskController(ApplicationDbContext dbContext, IConfiguration configuration)
         {
+            _configuration = configuration;
             _repository = new Repository.TaskRepository(dbContext);
 
-            _employeeRepository = new Repository.EmployeeRepository(dbContext);
+            _employeeRepository = new Repository.EmployeeRepository(dbContext, _configuration);
 
             _taskAttachmentsRepository = new Repository.TaskAttachmentRepository(dbContext);
-
+            _configuration = configuration;
         }
 
         public EmployeeModel LoggedEmployee { get; set; }
@@ -189,6 +191,7 @@ namespace TaskManager.Controllers
 
                     model.ModifiedById = _employeeRepository.GetEmployeeByUserId(userId).IdEmployee;
                     model.ModificationDate = DateTime.Now;
+
 
 
                     if (Guid.TryParse(userListAssignedToSelectedValue, out assignedTo))

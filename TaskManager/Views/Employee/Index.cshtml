@@ -132,7 +132,7 @@
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new {  id=item.IdEmployee  }, new { @class = ViewBag.CanEdit ? "enabled" : "disabled" }) |
-                    @Html.ActionLink("TaskDetails", "TaskDetails", new { id=item.IdEmployee }) |
+
                     @Html.ActionLink("Delete", "Delete", new { id=item.IdEmployee },new { @class = ViewBag.CanDelete ? "enabled" : "disabled" })
                 </td>
             </tr>
