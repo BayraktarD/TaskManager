@@ -84,8 +84,8 @@ namespace TaskManager.Controllers
 
                 string jobTypesListSelectedValue, departemntsListSelectedValue;
 
-                jobTypesListSelectedValue = Request.Form["JobTitlesList"].ToString();
-                departemntsListSelectedValue = Request.Form["DepartmentsList"].ToString();
+                jobTypesListSelectedValue = Request.Form["ddlJobsList"].ToString();
+                departemntsListSelectedValue = Request.Form["ddlDepartmentsList"].ToString();
 
                 if (Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
                     && Guid.TryParse(departemntsListSelectedValue, out department)
@@ -215,15 +215,7 @@ namespace TaskManager.Controllers
             //Populate departments ddl
             List<SelectListItem> departmentsList = new List<SelectListItem>();
 
-            if (departmentText == null && departmentValue == null)
-            {
-                departmentsList.Add(new SelectListItem
-                {
-                    Text = "---Select Department---",
-                    Value = "-1"
-                });
-            }
-            else
+            if (departmentText != null && departmentValue != null)
             {
                 departmentsList.Add(new SelectListItem
                 {
@@ -246,15 +238,7 @@ namespace TaskManager.Controllers
             //Populate job titles ddl
             List<SelectListItem> jobTitlesList = new List<SelectListItem>();
 
-            if (jobTitleText == null && jobTitleValue == null)
-            {
-                jobTitlesList.Add(new SelectListItem
-                {
-                    Text = "---Select Job Title---",
-                    Value = "-1"
-                });
-            }
-            else
+            if (jobTitleText != null && jobTitleValue != null)
             {
                 jobTitlesList.Add(new SelectListItem
                 {
@@ -276,12 +260,6 @@ namespace TaskManager.Controllers
 
 
             List<SelectListItem> employees = new List<SelectListItem>();
-
-            employees.Add(new SelectListItem
-            {
-                Text = "---Select Job Title---",
-                Value = "-1"
-            });
 
             foreach (var item in _repository.GetAllEmployees(GetLoggedEmployee().IdEmployee))
             {

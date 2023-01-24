@@ -187,10 +187,11 @@ namespace TaskManager.Repository
                 connection.Open();
 
                 Guid userId = Guid.NewGuid();
-
-                string passwordEncrypted = HashPassword(password);
-
                 string userName = email;
+
+                IdentityUser user = GenerateNewUser(email, userId, userName);
+
+                user = HashPassword(user, userId.ToString(), password);
 
                 string insert = @"Insert into AspNetUsers (Id,
                                                             UserName,
@@ -210,7 +211,7 @@ namespace TaskManager.Repository
                                                         + "'" + email + "', "
                                                         + "'" + email.ToUpper() + "', "
                                                         + "1,"
-                                                        + "'" + password.ToHashSet() + "', "
+                                                        + "'" + user.PasswordHash + "', "
                                                         + "0" + ","
                                                         + "0" + ","
                                                         + "0" + ","
@@ -238,6 +239,28 @@ namespace TaskManager.Repository
             return null;
         }
 
+        private static IdentityUser GenerateNewUser(string email, Guid userId, string userName)
+        {
+            return new IdentityUser()
+            {
+                Id = userId.ToString(),
+                UserName = userName,
+                NormalizedUserName = userName.ToUpper(),
+                Email = email,
+                NormalizedEmail = email.ToUpper(),
+                EmailConfirmed = true,
+                PasswordHash = null,
+                SecurityStamp = null,
+                ConcurrencyStamp = null,
+                PhoneNumber = null,
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = false,
+                LockoutEnd = null,
+                LockoutEnabled = false,
+                AccessFailedCount = 0,
+            };
+        }
+
         public string UpdateUser(string userId, string email, string password)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -247,17 +270,20 @@ namespace TaskManager.Repository
                 connection.ConnectionString = connectionString;
                 connection.Open();
 
-                var user = HashPassword(userId, password);
+                DataTable dt = GetUserFromDb(userId);
+
+                var user = MapDbUserToUserModel(dt, userId);
+
+                user = HashPassword(user, userId, password);
 
                 string hashedPassword = user.PasswordHash;
                 string securityStamp = user.SecurityStamp;
 
                 string userName = email;
 
-
                 string update = @"update AspNetUsers
                                 set PasswordHash = '" + hashedPassword + "',"
-                                + "SecurityStamp = '"+securityStamp+"',"
+                                + "SecurityStamp = '" + securityStamp + "',"
                                 + "UserName = '" + userName + "',"
                                 + "NormalizedUserName = '" + email.ToUpper() + "',"
                                 + "Email = '" + email + "',"
@@ -266,9 +292,7 @@ namespace TaskManager.Repository
 
                 SqlCommand cmd = new SqlCommand(update, connection);
 
-
                 var i = cmd.ExecuteNonQuery();
-
 
                 if (i > 0)
                 {
@@ -280,14 +304,41 @@ namespace TaskManager.Repository
 
                     return result;
                 }
+
                 return null;
             }
         }
 
-        public IdentityUser HashPassword(string userId, string password)
+        public IdentityUser MapDbUserToUserModel(DataTable dt, string userId)
+        {
+            var users = dt.AsEnumerable().Select(x =>
+            new IdentityUser
+            {
+                Id = x.Field<string>("Id"),
+                UserName = x.Field<string>("UserName"),
+                NormalizedUserName = x.Field<string>("NormalizedUserName"),
+                Email = x.Field<string>("Email"),
+                NormalizedEmail = x.Field<string>("NormalizedEmail"),
+                EmailConfirmed = x.Field<bool>("EmailConfirmed"),
+                PasswordHash = x.Field<string>("PasswordHash"),
+                SecurityStamp = x.Field<string>("SecurityStamp"),
+                ConcurrencyStamp = x.Field<string>("ConcurrencyStamp"),
+                PhoneNumber = x.Field<string>("PhoneNumber"),
+                PhoneNumberConfirmed = x.Field<bool>("PhoneNumberConfirmed"),
+                TwoFactorEnabled = x.Field<bool>("TwoFactorEnabled"),
+                LockoutEnd = x.Field<string>("LockoutEnd") != null ? x.Field<DateTime>("LockoutEnd") : null,
+                LockoutEnabled = x.Field<bool>("LockoutEnabled"),
+                AccessFailedCount = x.Field<int>("AccessFailedCount"),
+            });
+
+            var user = users.Where(x => x.Id == userId).FirstOrDefault();
+
+            return user;
+        }
+
+        public DataTable GetUserFromDb(string userId)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
-
             using (SqlConnection connection = new SqlConnection())
             {
 
@@ -315,37 +366,26 @@ namespace TaskManager.Repository
 
                 DataTable dt = new DataTable();
                 dap.Fill(dt);
+                return dt;
+            }
 
-                var hasher = new PasswordHasher<IdentityUser>();
+        }
 
-                var users = dt.AsEnumerable().Select(x =>
-                new IdentityUser
-                {
-                    Id = x.Field<string>("Id"),
-                    UserName = x.Field<string>("UserName"),
-                    NormalizedUserName = x.Field<string>("NormalizedUserName"),
-                    Email = x.Field<string>("Email"),
-                    NormalizedEmail = x.Field<string>("NormalizedEmail"),
-                    EmailConfirmed = x.Field<bool>("EmailConfirmed"),
-                    PasswordHash = x.Field<string>("PasswordHash"),
-                    SecurityStamp = x.Field<string>("SecurityStamp"),
-                    ConcurrencyStamp = x.Field<string>("ConcurrencyStamp"),
-                    PhoneNumber = x.Field<string>("PhoneNumber"),
-                    PhoneNumberConfirmed = x.Field<bool>("PhoneNumberConfirmed"),
-                    TwoFactorEnabled = x.Field<bool>("TwoFactorEnabled"),
-                    LockoutEnd = x.Field<string>("LockoutEnd") != null ? x.Field<DateTime>("LockoutEnd") : null,
-                    LockoutEnabled = x.Field<bool>("LockoutEnabled"),
-                    AccessFailedCount = x.Field<int>("AccessFailedCount"),
-                });
+        public IdentityUser HashPassword(IdentityUser user, string userId, string password)
+        {
+            var hasher = new PasswordHasher<IdentityUser>();
 
-                var user = users.Where(x => x.Id == userId).FirstOrDefault();
+            var hashedPassword = hasher.HashPassword(user, password);
 
-                var hashedPassword = hasher.HashPassword(user, password);
-
+            if (VerifyHasher(hasher, user, hashedPassword, password))
+            {
                 user.SecurityStamp = UpdateSecurityStampAsync(user);
                 user.PasswordHash = hashedPassword;
-
                 return user;
+            }
+            else
+            {
+                return null;
             }
 
         }
@@ -364,12 +404,19 @@ namespace TaskManager.Repository
                                     new NullLogger<UserManager<IdentityUser>>()
                                     );
             userManager.UpdateSecurityStampAsync(user);
-            return user.SecurityStamp;
+            if (user.SecurityStamp != null)
+            {
+                return user.SecurityStamp;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public bool VerifyHasher(PasswordHasher<IdentityUser> hasher, IdentityUser user, string hashedPassword)
+        public bool VerifyHasher(PasswordHasher<IdentityUser> hasher, IdentityUser user, string hashedPassword, string providedPassword)
         {
-            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, hashedPassword);
+            var result = hasher.VerifyHashedPassword(user, hashedPassword, providedPassword);
             if (result == PasswordVerificationResult.Success)
             {
                 return true;
@@ -380,32 +427,6 @@ namespace TaskManager.Repository
             }
         }
 
-        public string HashPassword(string password)
-        {
-            byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
-            Console.WriteLine($"Salt: {Convert.ToBase64String(salt)}");
 
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                    password: password!,
-                    salt: salt,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 256 / 8));
-            return hashed;
-        }
-
-        public string Criptare(string text)
-        {
-            char[] s = text.ToCharArray();
-            for (int i = 0; i < s.Length; i++)
-            {
-                if (i % 2 != 0)
-                    s[i] += (char)1;
-                else
-                    s[i] -= (char)1;
-            }
-            text = new string(s);
-            return text;
-        }
     }
 }

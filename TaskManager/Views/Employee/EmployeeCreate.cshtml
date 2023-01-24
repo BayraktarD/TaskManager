@@ -6,16 +6,141 @@
 }
 
 <script>
-    function PasswordValidation() {
-        var password1 = document.getElementById("password1");
-        var password2 = document.getElementById("password2");
+    var pswValid = false;
+
+    function validatePassword() {
+        var txbPassword = document.getElementById("txbPassword").value;
+        var txbPasswordConfirm = document.getElementById("txbPasswordConfirm").value;
+        var message = document.getElementById("message");
+
+        var pswLenghtValidation = document.getElementById("pswLenghtValidation");
+        var pswUpperValidation = document.getElementById("pswUpperValidation");
+        var pswDigitValidation = document.getElementById("pswDigitValidation");
+        var pswNonAlphanumericValidation = document.getElementById("pswNonAlphanumericValidation");
+
+
+        var nonAlphanumeric = new RegExp("[^A-Za-z0-9]");
+        var digit = new RegExp("[0-9]");
+        var upperCase = new RegExp("[A-Z]");
+
+
+
+        var btnCreate = document.getElementById("btnCreate");
+        if (txbPassword.length < 8) {
+            pswLenghtValidation.innerHTML = "Password should contain at least 8 charachters!";
+            pswLenghtValidation.style.color = "red";
+        }
+        else{
+            pswLenghtValidation.innerHTML = "";
+
+        }
+        if (!upperCase.test(txbPassword)) {
+            pswUpperValidation.innerHTML = "Passwords must have at least one uppercase ('A'-'Z')";
+            pswUpperValidation.style.color = "red";
+        }
+        else {
+            pswUpperValidation.innerHTML = "";
+
+        }
+
+        if (!digit.test(txbPassword)) {
+            pswDigitValidation.innerHTML = "Passwords must have at least one digit ('0'-'9')";
+            pswDigitValidation.style.color = "red";
+        }
+        else {
+            pswDigitValidation.innerHTML = "";
+        }
+
+        if (!nonAlphanumeric.test(txbPassword)) {
+            pswNonAlphanumericValidation.innerHTML = "Passwords must have at least one non alphanumeric character.";
+            pswNonAlphanumericValidation.style.color = "red";
+        }
+        else {
+            pswNonAlphanumericValidation.innerHTML = "";
+        }
+
+        if (txbPassword != txbPasswordConfirm) {
+            message.innerHTML = "Passwords do not match";
+            message.style.color = "red";
+            pswValid = false;
+        } else {
+            message.innerHTML = "";
+            message.style.color = "green";
+            pswValid = true;
+            enableBtn();
+
+        }
     }
 
-    function clearFiles() {
-        var input = document.getElementById("files");
-        input.value = "";
-        displayFiles();
+    var jobTitleValid = false;
+
+    function validateJobSelection() {
+
+        var ddlJobsList = document.getElementById("ddlJobsList");
+
+        var ddlJobsListOptions = ddlJobsList.options;
+
+        var ddlSelectedIndex = ddlJobsListOptions.selectedIndex;
+
+        for (var i = 0; i < ddlJobsListOptions.length; i++) {
+            if (i == ddlSelectedIndex && i != 0) {
+                ddlJobsListOptions[i].selected = true;
+                jobTitleValid = true;
+                enableBtn();
+                break;
+            }
+        }
     }
+
+    var depValid = false;
+
+    function validateDepartmentSelection() {
+
+        var ddlDepartmentsList = document.getElementById("ddlDepartmentsList");
+
+        var ddlDepartmentsListOptions = ddlDepartmentsList.options;
+
+        var ddlSelectedIndex = ddlDepartmentsListOptions.selectedIndex;
+
+        for (var i = 0; i < ddlDepartmentsListOptions.length; i++) {
+            if (i == ddlSelectedIndex && i != 0) {
+                ddlDepartmentsListOptions[i].selected = true;
+                depValid = true;
+                enableBtn();
+                break;
+            }
+        }
+    }
+
+    var otherValid = false;
+
+    function validateNameSurname() {
+        var txbName = document.getElementById("txbName");
+        var txbSurname = document.getElementById("txbSurname");
+        var txbEmail = document.getElementById("txbEmail");
+
+        if (txbSurname.value != "" && txbName != "" && txbEmail != "") {
+            otherValid = true;
+            enableBtn();
+        }
+        else {
+            otherValid = false;
+        }
+
+    }
+
+    function enableBtn() {
+        var btnCreate = document.getElementById("btnCreate");
+
+        if (pswValid == true && jobTitleValid == true && depValid == true && otherValid == true) {
+            btnCreate.disabled = false;
+
+        }
+        else {
+            btnCreate.disabled = true;
+        }
+    }
+
 </script>
 
 @if (ViewData.ModelState.Values.Any(x => x.Errors.Count >= 1))
@@ -37,28 +162,34 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" id="txbName" class="form-control" onblur="validateNameSurname()" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Surname" class="control-label"></label>
-                <input asp-for="Surname" class="form-control" />
+                <input asp-for="Surname" id="txbSurname" class="form-control" onblur="validateNameSurname()" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input type="password" id="password1" asp-for="Password" class="form-control" onchange="PasswordValidation()" />
+                <input type="password" id="txbPassword" asp-for="Password" class="form-control" onblur="validatePassword()" />
                 <span asp-validation-for="Password" class="text-danger"></span>
+                <p></p><span id="pswLenghtValidation"></span>
+                <p></p> <span id="pswUpperValidation"></span>
+                <p></p><span id="pswDigitValidation"></span>
+                <p></p><span id="pswNonAlphanumericValidation"></span>
+
+
             </div>
 
             <div class="form-group">
                 <label class="control-label">Confirm Password</label>
-                <input type="password" id="password2" class="form-control" onchange="PasswordValidation()" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <input type="password" id="txbPasswordConfirm" class="form-control" onblur="validatePassword()" required />
+                <span id="message"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" id="txbEmail" class="form-control" onblur="validateNameSurname()" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -102,28 +233,40 @@
                 <label asp-for="JobTitle" class="control-label"></label>
             </div>
             <div class="form-group">
+
                 <label asp-for="JobTitleString" class="control-label"></label>
                 <br />
-                @Html.DropDownList("JobTitlesList")
+                <select id="ddlJobsList" name="ddlJobsList" onchange="validateJobSelection()">
+                    <option value="" disabled selected>Select an option</option>
+                    @foreach (var item in ViewBag.JobTitlesList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
 
-                @* <input asp-for="JobTitleString" class="form-control" />*@
                 <span asp-validation-for="JobTitleString" class="text-danger"></span>
             </div>
             <div class="form-group" hidden>
                 <label asp-for="Department" class="control-label"></label>
             </div>
             <div class="form-group">
+
                 <label asp-for="DepartmentString" class="control-label"></label>
                 <br />
-                @Html.DropDownList("DepartmentsList")
+                <select id="ddlDepartmentsList" name="ddlDepartmentsList" onchange="validateDepartmentSelection()">
+                    <option value="" disabled selected>Select an option</option>
+                    @foreach (var item in ViewBag.DepartmentsList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
 
-                @*<input asp-for="DepartmentString" class="form-control" />*@
                 <span asp-validation-for="DepartmentString" class="text-danger"></span>
             </div>
             <p>
             </p>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input id="btnCreate" type="submit" value="Create" class="btn btn-primary" disabled />
             </div>
         </form>
     </div>
