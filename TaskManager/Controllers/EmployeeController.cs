@@ -150,8 +150,8 @@ namespace TaskManager.Controllers
                 string jobTypesListSelectedValue, departemntsListSelectedValue;
 
 
-                jobTypesListSelectedValue = Request.Form["JobTitlesList"].ToString();
-                departemntsListSelectedValue = Request.Form["DepartmentsList"].ToString();
+                jobTypesListSelectedValue = Request.Form["ddlJobsList"].ToString();
+                departemntsListSelectedValue = Request.Form["ddlDepartmentsList"].ToString();
 
                 if (Guid.TryParse(jobTypesListSelectedValue, out jobTitle)
                     && Guid.TryParse(departemntsListSelectedValue, out department)
@@ -215,16 +215,8 @@ namespace TaskManager.Controllers
             //Populate departments ddl
             List<SelectListItem> departmentsList = new List<SelectListItem>();
 
-            if (departmentText != null && departmentValue != null)
-            {
-                departmentsList.Add(new SelectListItem
-                {
-                    Text = departmentText,
-                    Value = departmentValue
-                });
-            }
 
-            foreach (var item in _departmentRepository.GetAllDepartments().Where(x => x.IdDepartment.ToString() != departmentValue).OrderBy(x => x.Department1))
+            foreach (var item in _departmentRepository.GetAllDepartments().OrderBy(x => x.Department1))
             {
                 departmentsList.Add(new SelectListItem
                 {
@@ -232,22 +224,18 @@ namespace TaskManager.Controllers
                     Value = item.IdDepartment.ToString()
                 });
             }
-
             ViewBag.DepartmentsList = departmentsList;
+
+            if (departmentText != null && departmentValue != null)
+            {
+                var selectedDepartmentIndex = departmentsList.IndexOf(departmentsList.Where(x=>x.Value == departmentValue).FirstOrDefault());
+                ViewBag.SelectedDepartmentIndex = selectedDepartmentIndex + 1;
+            }
 
             //Populate job titles ddl
             List<SelectListItem> jobTitlesList = new List<SelectListItem>();
 
-            if (jobTitleText != null && jobTitleValue != null)
-            {
-                jobTitlesList.Add(new SelectListItem
-                {
-                    Text = jobTitleText,
-                    Value = jobTitleValue
-                });
-            }
-
-            foreach (var item in _jobTitlesRepository.GetAllJobTitles().Where(x => x.IdJobTitle.ToString() != jobTitleValue).OrderBy(x => x.JobTitle1))
+            foreach (var item in _jobTitlesRepository.GetAllJobTitles().OrderBy(x => x.JobTitle1))
             {
                 jobTitlesList.Add(new SelectListItem
                 {
@@ -257,6 +245,12 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.JobTitlesList = jobTitlesList;
+
+            if (jobTitleText != null && jobTitleValue != null)
+            {
+                var selectedJobTitleIndex = jobTitlesList.IndexOf(jobTitlesList.Where(x => x.Value == jobTitleValue).FirstOrDefault());
+                ViewBag.SelectedJobTitleIndex = selectedJobTitleIndex + 1;
+            }
 
 
             List<SelectListItem> employees = new List<SelectListItem>();
