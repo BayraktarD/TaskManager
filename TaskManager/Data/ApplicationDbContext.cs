@@ -80,14 +80,14 @@ namespace TaskManager.Data
             //    entity.HasMany(d => d.Roles)
             //        .WithMany(p => p.Users)
             //        .UsingEntity<Dictionary<string, object>>(
-            //            "AspNetUserRole",
-            //            l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
-            //            r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+            //            "AspNetUserRolesM",
+            //            l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_AspNetUserRoles_AspNetRoles_RoleId"),
+            //            r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_AspNetUserRoles_AspNetUsers_UserId"),
             //            j =>
             //            {
-            //                j.HasKey("UserId", "RoleId");
+            //                j.HasKey("UserId", "RoleId").HasName("PK_AspNetUserRoles");
 
-            //                j.ToTable("AspNetUserRoles");
+            //                j.ToTable("AspNetUserRolesM");
 
             //                j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
             //            });
@@ -157,6 +157,9 @@ namespace TaskManager.Data
                 entity.HasKey(e => e.IdEmployee)
                     .HasName("PK__tmp_ms_x__B7C926384DDF13EA");
 
+                entity.HasIndex(e => e.UserId, "UniqueUserId")
+                    .IsUnique();
+
                 entity.Property(e => e.IdEmployee).ValueGeneratedNever();
 
                 entity.Property(e => e.Email).HasMaxLength(250);
@@ -164,8 +167,6 @@ namespace TaskManager.Data
                 entity.Property(e => e.Name).HasMaxLength(250);
 
                 entity.Property(e => e.Surname).HasMaxLength(250);
-
-                entity.Property(e => e.UserId).HasMaxLength(450);
 
                 entity.HasOne(d => d.DepartmentNavigation)
                     .WithMany(p => p.Employees)
@@ -246,6 +247,7 @@ namespace TaskManager.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TaskAttachment_Tasks");
             });
+
             base.OnModelCreating(modelBuilder);
             OnModelCreatingPartial(modelBuilder);
         }
