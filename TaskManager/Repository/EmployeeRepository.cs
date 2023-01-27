@@ -427,6 +427,20 @@ namespace TaskManager.Repository
             }
         }
 
+        public bool UserHasTasksToAccomplish(Guid idUser)
+        {
+            var userTasks = dbContext.Tasks.Where(x => x.AssignedToId == idUser && x.IsActive == false).Count();
+            if (userTasks > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
 
     }
 }

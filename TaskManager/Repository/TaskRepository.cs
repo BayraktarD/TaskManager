@@ -10,6 +10,7 @@ namespace TaskManager.Repository
     {
         private ApplicationDbContext dbContext;
 
+        private TaskAttachmentRepository _taskAttachmentsRepository;
 
         public TaskRepository()
         {
@@ -19,6 +20,7 @@ namespace TaskManager.Repository
         public TaskRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
+            this._taskAttachmentsRepository= new TaskAttachmentRepository(dbContext);
 
         }
 
@@ -168,6 +170,13 @@ namespace TaskManager.Repository
         public void DeleteTask(Guid idTask)
         {
             Models.DBObjects.Task task = dbContext.Tasks.Where(x => x.IdTask == idTask).FirstOrDefault();
+
+            List<TaskAttachment> taskAttachments = dbContext.TaskAttachments.Select(x=>x).Where(x=>x.IdTask == idTask).ToList();
+
+            foreach (var taskAttachment in taskAttachments)
+            {
+                _taskAttachmentsRepository.DeleteTaskAttachments(_taskAttachmentsRepository.MapDbObjectToModel(taskAttachment));
+            }
 
             if (task != null)
             {

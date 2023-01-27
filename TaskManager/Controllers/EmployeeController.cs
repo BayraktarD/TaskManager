@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NuGet.Protocol.Core.Types;
+using PagedList;
 using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Models.DBObjects;
@@ -46,6 +48,7 @@ namespace TaskManager.Controllers
             GetLoggedEmployee();
             GetPermissions();
             var employees = _repository.GetAllEmployees(LoggedEmployee.IdEmployee);
+
             return View("Index", employees);
         }
 
@@ -187,8 +190,18 @@ namespace TaskManager.Controllers
         // GET: EmployeeController/Delete/5
         public ActionResult Delete(Guid id)
         {
-            var model = _repository.GetEmployeeById(id);
-            return View("EmployeeDelete", model);
+            EmployeeModel model;
+            bool hasTasks = _repository.UserHasTasksToAccomplish(id);
+            if (hasTasks)
+            {
+                TempData["alertMsg"] = "You can't delete this employee. He has tasks to accomplish!";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                model = _repository.GetEmployeeById(id);
+                return View("EmployeeDelete", model);
+            }
         }
 
         // POST: EmployeeController/Delete/5
@@ -228,7 +241,7 @@ namespace TaskManager.Controllers
 
             if (departmentText != null && departmentValue != null)
             {
-                var selectedDepartmentIndex = departmentsList.IndexOf(departmentsList.Where(x=>x.Value == departmentValue).FirstOrDefault());
+                var selectedDepartmentIndex = departmentsList.IndexOf(departmentsList.Where(x => x.Value == departmentValue).FirstOrDefault());
                 ViewBag.SelectedDepartmentIndex = selectedDepartmentIndex + 1;
             }
 

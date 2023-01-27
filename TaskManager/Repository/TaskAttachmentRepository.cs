@@ -16,6 +16,7 @@ namespace TaskManager.Repository
         public TaskAttachmentRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
+
         }
 
         public List<TaskAttachmentModel> GetAllTaskAttachments(Guid idTask)
@@ -28,6 +29,15 @@ namespace TaskManager.Repository
             }
 
             return listTaskAttachments;
+        }
+
+        public TaskAttachmentModel GetTaskAttachment(Guid idAttachment, Guid idTask)
+        {
+            TaskAttachmentModel taskAttachment = new TaskAttachmentModel();
+
+            taskAttachment = MapDbObjectToModel(dbContext.TaskAttachments.Where(x => x.IdAttachment == idAttachment && x.IdTask == idTask).FirstOrDefault());
+
+            return taskAttachment;
         }
 
         public TaskAttachmentModel MapDbObjectToModel(TaskAttachment taskAttachment)

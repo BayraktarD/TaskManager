@@ -5,6 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@if (TempData["alertMsg"] != null)
+{
+    <div class="alert alert-warning">@TempData["alertMsg"]</div>
+}
+
 <h1>TaskDetails</h1>
 
 <div>
@@ -98,6 +103,7 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new {  id = Model.IdTask}) |
+    @Html.ActionLink("Edit", "Edit", new {  id = Model.IdTask}) | @Html.ActionLink("Download Attachments", "DownloadAttachments", new { id= Model.IdTask }) |
+
     <a asp-action="Index">Back to List</a>
 </div>

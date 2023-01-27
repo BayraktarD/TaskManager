@@ -53,7 +53,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -83,14 +83,14 @@
             </div>
             <div class="form-group">
                 <label asp-for="AssignedToString" class="control-label"></label>
-                @*<input asp-for="AssignedToId" class="form-control" />*@
                 <br />
-               @* @{
-                    bool? isEnabled = ViewBag.CanAssign as bool?;
-
-                }*@
-                @Html.DropDownList("UsersList")
-                @*@Html.DropDownList("UsersList", (IEnumerable<SelectListItem>)ViewBag.UsersList, new { disabled = isEnabled.HasValue && isEnabled.Value ? null : "disabled" })*@
+                <select id="ddlUsersList" name="ddlUsersList">
+                    <option value="" disabled selected>Select an option</option>
+                    @foreach (var item in ViewBag.UsersList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
 
                 <span asp-validation-for="AssignedToString" class="text-danger"></span>
             </div>
@@ -106,7 +106,7 @@
                 </label>
             </div>
             <div>
-                <input asp-for="TaskAttachments" type="file" name="files" class="form-control" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()" />
+                <input asp-for="TaskAttachments" type="file" name="files" class="form-control" accept=".pdf,.doc,.docx,.jpg,.png" multiple onchange="displayFiles()" />
                 @*<input type="file" name="files" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()">*@
                 <ul id="fileList"></ul>
                 <input type="button" value="Clear" onclick="clearFiles()" class="form-control" />

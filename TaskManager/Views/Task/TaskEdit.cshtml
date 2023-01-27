@@ -7,6 +7,15 @@
 
 }
 <script>
+
+    function setSelectedOption() {
+        var selectedEmployeeIndex = '@ViewBag.SelectedEmployeeIndex'; // this value can come from server or somewhere else
+        var ddlUsersList = document.getElementById("ddlUsersList");
+        ddlUsersList.options[selectedEmployeeIndex].selected = true;
+    }
+    window.onload = setSelectedOption;
+
+
     function displayFiles() {
         var checkboxHasAttachments = document.getElementById("HasAttachments");
         var input = document.getElementById("files");
@@ -57,7 +66,7 @@
 
 
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="IdTask" class="control-label" hidden></label>
@@ -87,11 +96,13 @@
             <div class="form-group">
                 <label asp-for="AssignedToId" class="control-label"></label>
                 <br />
-                @*@{
-                    bool? isEnabled = ViewBag.CanAssign as bool?;
-                }
-                @Html.DropDownList("UsersList",(IEnumerable<SelectListItem>)ViewBag.UsersList, new { disabled = isEnabled.HasValue && isEnabled.Value ? null : "disabled" })*@
-                @Html.DropDownList("UsersList")
+                <select id="ddlUsersList" name="ddlUsersList">
+                    <option value="" disabled selected>Select an option</option>
+                    @foreach (var item in ViewBag.UsersList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
 
                 <span asp-validation-for="AssignedToId" class="text-danger"></span>
             </div>
@@ -113,7 +124,7 @@
             </div>
             <p></p>
             <div>
-                <input asp-for="TaskAttachments" type="file" name="files" class="form-control" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()" />
+                <input asp-for="TaskAttachments" type="file" name="files" class="form-control" id="files" accept=".pdf,.doc,.docx,.jpg,.png" multiple onchange="displayFiles()" />
                 @*<input type="file" name="files" id="files" accept=".pdf,.doc,.docx" multiple onchange="displayFiles()">*@
                 <ul id="fileList"></ul>
                 <input type="button" value="Clear" onclick="clearFiles()" class="form-control" />
@@ -127,7 +138,8 @@
 </div>
 <p></p>
 <div>
-    <a asp-action="Index">Back to List</a>|<a asp-action="Index">View attachments</a>
+    <a asp-action="Index">Back to List</a> | 
+
 </div>
 
 @section Scripts {
