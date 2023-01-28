@@ -32,7 +32,7 @@ namespace TaskManager.Models
         [Display(Name = "Can Assign Tasks")]
         public bool CanAssignTasks { get; set; }
 
-        [Display(Name = "Can Modify Tasks")]
+        [Display(Name = "Can Modify Profiles")]
         public bool CanModifyProfiles { get; set; }
 
         [Display(Name = "Can Delete Tasks")]

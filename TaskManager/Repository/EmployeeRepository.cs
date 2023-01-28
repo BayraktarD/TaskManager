@@ -15,6 +15,8 @@ using PasswordVerificationResult = Microsoft.AspNetCore.Identity.PasswordVerific
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace TaskManager.Repository
 {
@@ -36,6 +38,7 @@ namespace TaskManager.Repository
         }
 
         public List<EmployeeModel> GetAllEmployees(Guid log)
+        public async Task<List<EmployeeModel>> GetAllEmployees(Guid log)
         {
             List<EmployeeModel> models = new List<EmployeeModel>();
             foreach (var dbModel in dbContext.Employees.Where(x => x.IdEmployee != log))
@@ -91,19 +94,18 @@ namespace TaskManager.Repository
             return model;
         }
 
-        public void InsertEmployee(EmployeeModel model)
+        public async Task<Guid> InsertEmployee(EmployeeModel model)
         {
             if (model != null)
             {
                 model.IdEmployee = Guid.NewGuid();
 
-                model.UserId = InsertNewUser(model.Email, model.Password);
-                dbContext.Add(MapModelToDbObject(model));
-
-
-                dbContext.SaveChanges();
+                model.UserId = await InsertNewUser(model.Email, model.Password);
+                await dbContext.Employees.AddAsync(MapModelToDbObject(model));
+                await dbContext.SaveChangesAsync();
 
             }
+            return model.IdEmployee;
         }
 
         public void UpdateEmployee(EmployeeModel model)
@@ -171,15 +173,17 @@ namespace TaskManager.Repository
             Employee employee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == id);
             if (employee != null)
             {
+                DeleteUserFromDB(employee.UserId);
                 dbContext.Employees.Remove(employee);
                 dbContext.SaveChanges();
+
             }
         }
 
 
-        public string InsertNewUser(string email, string password)
+        public async Task<string> InsertNewUser(string email, string password)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string connectionString = _configuration.GetConnectionString("TaskManagerDB");
 
             using (SqlConnection connection = new SqlConnection())
             {
@@ -221,23 +225,39 @@ namespace TaskManager.Repository
                 SqlCommand cmd = new SqlCommand(insert, connection);
 
 
-                var i = cmd.ExecuteNonQuery();
+                var i = await cmd.ExecuteNonQueryAsync();
 
+                connection.Close();
 
                 if (i > 0)
                 {
-                    string getInserted = @"select Id from AspNetUsers where Email = '" + email + "'";
-                    SqlCommand command = new SqlCommand(getInserted, connection);
-                    var result = command.ExecuteScalar().ToString();
-
-                    connection.Close();
-
-                    return result;
+                    return await GetInsertedUserId(email);
                 }
             }
 
             return null;
         }
+
+        private async Task<string> GetInsertedUserId(string email)
+        {
+            string connectionString = _configuration.GetConnectionString("TaskManagerDB");
+
+            using (SqlConnection connection = new SqlConnection())
+            {
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string getInserted = @"select Id from AspNetUsers where Email = '" + email + "'";
+                SqlCommand command = new SqlCommand(getInserted, connection);
+                var result = await command.ExecuteScalarAsync();
+
+                connection.Close();
+                return result.ToString();
+            }
+        }
+
+
+
 
         private static IdentityUser GenerateNewUser(string email, Guid userId, string userName)
         {
@@ -263,7 +283,7 @@ namespace TaskManager.Repository
 
         public string UpdateUser(string userId, string email, string password)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string connectionString = _configuration.GetConnectionString("TaskManagerDB");
 
             using (SqlConnection connection = new SqlConnection())
             {
@@ -338,7 +358,7 @@ namespace TaskManager.Repository
 
         public DataTable GetUserFromDb(string userId)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string connectionString = _configuration.GetConnectionString("TaskManagerDB");
             using (SqlConnection connection = new SqlConnection())
             {
 
@@ -441,6 +461,20 @@ namespace TaskManager.Repository
 
         }
 
+        public void DeleteUserFromDB(string userId)
+        {
+            string connectionString = _configuration.GetConnectionString("TaskManagerDB");
+            using (SqlConnection connection = new SqlConnection())
+            {
 
+                connection.ConnectionString = connectionString;
+                connection.Open();
+
+                string deleteUser = @"delete from AspNetUsers where Id = '" + userId + "'";
+
+                SqlCommand command = new SqlCommand(deleteUser, connection);
+                command.ExecuteScalar();
+            }
+        }
     }
 }

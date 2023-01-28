@@ -4,7 +4,9 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
+<style>
 
+</style>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +17,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TaskManager.styles.css" asp-append-version="true" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
 </head>
 <body>
     <header>
@@ -38,10 +45,28 @@
                                 <a class="nav-link text-dark">|</a>
                             </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Task" asp-action="Index">Tasks</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" data-toggle="dropdown">Created Tasks</a>
+                                <div class="dropdown-menu dropdown-menu">
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="CreatedTasksAssigned">Assigned</a>
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="CreatedTasksInProgress">In Progress</a>
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="CreatedTasksFinished">Finished</a>
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="CreatedTasksMissed">Missed</a>
+                                </div>
                             </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link text-dark">|</a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" data-toggle="dropdown">My Tasks</a>
+                                <div class="dropdown-menu dropdown-menu">
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="MyTasksToAccomplish">To Accomplish</a>
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="MyTasksFinished">Finished</a>
+                                    <a class="dropdown-item" asp-controller="Task" asp-action="MyTasksMissed">Missed</a>
+                                </div>
+                            </li>
                             <li>
                                 <a class="nav-link text-dark">|</a>
                             </li>
@@ -57,33 +82,6 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MyProfile" asp-action="Details">My Profile</a>
                             </li>
-
-                            @* <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="AttachmentType" asp-action="Index">Attachment Types</a>
-                        </li>
-
-                        <li>
-                        <a class="nav-link text-dark">|</a>
-                        </li>*@
-
-
-                            @* <li>
-                        <a class="nav-link text-dark">|</a>
-
-                        </li>
-
-                        <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
-                        </li>*@
-
-                            @*<li>
-                        <a class="nav-link text-dark">|</a>
-
-                        </li>
-
-                        <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="JobTitles" asp-action="Index">Job Titles</a>
-                        </li>*@
                         }
                     </ul>
 
@@ -100,12 +98,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - TaskManager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.Now.Year - TaskManager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
 </html>

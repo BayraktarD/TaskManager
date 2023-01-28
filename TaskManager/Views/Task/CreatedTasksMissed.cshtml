@@ -1,0 +1,85 @@
+﻿@model IEnumerable<TaskManager.Models.TaskModel>
+
+@{
+    ViewData["Title"] = "CreatedTasksMissed";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .disabled {
+        color: gray;
+        pointer-events: none;
+    }
+</style>
+
+<h1>CreatedTasksMissed</h1>
+
+@*<p>
+    <a asp-action="Create" class="@(ViewBag.CanCreate ? "enabled" : "disabled")">Create New</a>
+</p>*@
+<h3>Missed</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.IdTask)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedByString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedToString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SolutionDetails)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Where(x => x.CreatedById == ViewBag.EmployeeId && x.FinishedDate == null && x.EndDate <= DateTime.Now.Date))
+        {
+            <tr>
+                <td hidden>
+                    @Html.DisplayFor(modelItem => item.IdTask)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedByString)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.AssignedToString)
+                </td>
+
+                <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.SolutionDetails)
+                </td>
+                <td>
+
+                        @Html.ActionLink("Details", "Details", new { id=item.IdTask })
+
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

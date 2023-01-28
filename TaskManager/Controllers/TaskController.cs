@@ -44,23 +44,85 @@ namespace TaskManager.Controllers
 
         }
 
+        private List<TaskModel> GetListTaskModel()
+        {
+            GetLoggedEmployee();
+
+            ViewBag.EmployeeId = LoggedEmployee.IdEmployee;
+
+            return _repository.GetAllEmployeeTasks(LoggedEmployee.IdEmployee);
+        }
+
         // GET: TaskController
         public ActionResult Index()
         {
-            GetLoggedEmployee();
+            return View("Index");
+        }
+
+
+        public ActionResult CreatedTasksAssigned()
+        {
+            var tasks = GetListTaskModel();
             GetPermissions();
 
-            var tasks = _repository.GetAllEmployeeTasks(LoggedEmployee.IdEmployee);
+            return View("CreatedTasksAssigned", tasks);
+        }
 
-            ViewBag.EmployeeId = LoggedEmployee.IdEmployee;
-            return View("Index", tasks);
+        public ActionResult CreatedTasksInProgress()
+        {
+            var tasks = GetListTaskModel();
+            GetPermissions();
+
+            return View("CreatedTasksInProgress", tasks);
+        }
+
+        public ActionResult CreatedTasksFinished()
+        {
+            var tasks = GetListTaskModel();
+            GetPermissions();
+
+            return View("CreatedTasksFinished", tasks);
+        }
+
+        public ActionResult CreatedTasksMissed()
+        {
+            var tasks = GetListTaskModel();
+            GetPermissions();
+
+            return View("CreatedTasksMissed", tasks);
+        }
+
+        public ActionResult MyTasksMissed()
+        {
+            var tasks = GetListTaskModel();
+            GetPermissions();
+
+            return View("MyTasksMissed", tasks);
+        }
+
+        public ActionResult MyTasksFinished()
+        {
+            var tasks = GetListTaskModel();
+            GetPermissions();
+
+            return View("MyTasksFinished", tasks);
+        }
+
+        public ActionResult MyTasksToAccomplish()
+        {
+            var tasks = GetListTaskModel();
+            GetPermissions();
+
+            return View("MyTasksToAccomplish", tasks);
         }
 
         private void GetPermissions()
         {
+            GetLoggedEmployee();
             ViewBag.CanCreate = LoggedEmployee.CanCreateTasks;
             ViewBag.CanEdit = LoggedEmployee.CanModifyTasks;
             ViewBag.CanDelete = LoggedEmployee.CanDeleteTasks;
+            ViewBag.CanAssign = LoggedEmployee.CanAssignTasks;
         }
 
 
@@ -75,7 +137,6 @@ namespace TaskManager.Controllers
         public ActionResult Create()
         {
             SelectCategory(null, null);
-
             return View("TaskCreate");
         }
 
@@ -127,40 +188,37 @@ namespace TaskManager.Controllers
 
                             taskAttachmentModel.IdTask = idTask;
                             taskAttachmentModel.Attachment = output;
-                            taskAttachmentModel.AttachmentName = file.FileName;
+                            taskAttachmentModel.AttachmentName = "Task_" + file.FileName;
 
                             task = TryUpdateModelAsync(taskAttachmentModel);
                             task.Wait();
                             if (task.Result)
                             {
                                 _taskAttachmentsRepository.InsertTaskAttachment(taskAttachmentModel);
-                            }
-                            else
-                            {
-                                return RedirectToAction("Index");
-
+                                
                             }
                         }
-                        return RedirectToAction("Index");
+                        return RedirectToAction("CreatedTasksAssigned");
 
                     }
                     else
                     {
                         SelectCategory(null, null);
-                        return View("TaskCreate");
+
+                        return View("CreatedTasksAssigned");
                     }
 
                 }
                 else
                 {
                     SelectCategory(null, null);
-                    return View("TaskCreate");
+                    return View("CreatedTasksAssigned");
                 }
             }
             catch
             {
                 SelectCategory(null, null);
-                return View("TaskCreate");
+                return View("CreatedTasksAssigned");
 
             }
         }
@@ -223,38 +281,38 @@ namespace TaskManager.Controllers
 
                             taskAttachmentModel.IdTask = idTask;
                             taskAttachmentModel.Attachment = output;
-                            taskAttachmentModel.AttachmentName = file.FileName;
+                            taskAttachmentModel.AttachmentName = "Task_"+file.FileName;
 
                             task = TryUpdateModelAsync(taskAttachmentModel);
                             task.Wait();
                             if (task.Result)
                             {
                                 _taskAttachmentsRepository.InsertTaskAttachment(taskAttachmentModel);
-                                return RedirectToAction("Index");
                             }
                             else
                             {
-                                return RedirectToAction("Index", id);
+                                return RedirectToAction("CreatedTasksAssigned");
 
                             }
                         }
-                        return RedirectToAction("Index");
+                        return RedirectToAction("CreatedTasksAssigned");
                     }
                     else
                     {
-                        return RedirectToAction("Index", id);
+                        return RedirectToAction("CreatedTasksAssigned");
                     }
 
                 }
                 else
                 {
-                    return RedirectToAction("Index", id);
+
+                    return RedirectToAction("CreatedTasksAssigned");
                 }
             }
 
             catch
             {
-                return RedirectToAction("Index", id);
+                return RedirectToAction("CreatedTasksAssigned");
             }
         }
 
@@ -293,7 +351,7 @@ namespace TaskManager.Controllers
 
                         taskAttachmentModel.IdTask = idTask;
                         taskAttachmentModel.Attachment = output;
-                        taskAttachmentModel.AttachmentName = file.FileName;
+                        taskAttachmentModel.AttachmentName = "Solution_"+file.FileName;
 
                         task = TryUpdateModelAsync(taskAttachmentModel);
                         task.Wait();
@@ -303,16 +361,22 @@ namespace TaskManager.Controllers
                         }
                         else
                         {
+                            GetPermissions();
+
                             return RedirectToAction("Index", id);
 
                         }
 
                     }
-                    return RedirectToAction("Index");
+                    GetPermissions();
+
+                    return RedirectToAction("MyTasksFinished");
 
                 }
                 else
                 {
+                    GetPermissions();
+
                     return RedirectToAction("Index", id);
                 }
 
@@ -320,6 +384,8 @@ namespace TaskManager.Controllers
 
             catch
             {
+                GetPermissions();
+
                 return RedirectToAction("Index", id);
             }
         }
@@ -368,20 +434,23 @@ namespace TaskManager.Controllers
             try
             {
                 _repository.DeleteTask(id);
+                GetPermissions();
+
                 return RedirectToAction("Index");
             }
             catch
             {
+
                 return View("TaskDelete", id);
             }
         }
 
-        public ActionResult SelectCategory(string employeeText, string employeeValue)
+        public async Task<IActionResult> SelectCategory(string employeeText, string employeeValue)
         {
 
             List<SelectListItem> userList = new List<SelectListItem>();
 
-            foreach (var item in _employeeRepository.GetAllEmployees(GetLoggedEmployee().IdEmployee))
+            foreach (var item in await _employeeRepository.GetAllEmployees(GetLoggedEmployee().IdEmployee))
             {
                 userList.Add(new SelectListItem
                 {
@@ -397,10 +466,10 @@ namespace TaskManager.Controllers
                 var selectedEmployeeIndex = userList.IndexOf(userList.Where(x => x.Value == employeeValue).FirstOrDefault());
                 ViewBag.SelectedEmployeeIndex = selectedEmployeeIndex + 1;
             }
+            GetPermissions();
 
+            return Ok();
 
-
-            return View();
         }
 
         public ActionResult DownloadAttachments(Guid id)

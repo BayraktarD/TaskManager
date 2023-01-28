@@ -17,12 +17,33 @@
     <div class="alert alert-danger">@TempData["alertMsg"]</div>
 }
 
+@if (TempData["modifiedWithSuccess"] != null)
+{
+    <div class="alert alert-success">@TempData["modifiedWithSuccess"]</div>
+}
+
+@if (TempData["employeeModificationFailed"] != null)
+{
+    <div class="alert alert-danger">@TempData["employeeModificationFailed"]</div>
+}
+
+@if (TempData["createdWithSuccess"] != null)
+{
+    <div class="alert alert-success">@TempData["createdWithSuccess"]</div>
+}
+
+@if (TempData["creationFailed"] != null)
+{
+    <div class="alert alert-danger">@TempData["creationFailed"]</div>
+}
+
 <h1>Index</h1>
 
 <p>
     <a asp-action="Create" class="@(ViewBag.CanCreate ? "enabled" : "disabled")">Create New</a>
 
 </p>
+
 
 <table class="table">
     <thead>
@@ -36,10 +57,10 @@
             @*<th>
             @Html.DisplayNameFor(model => model.Surname)
             </th>*@
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.UserId)
             </th>
-            <th>
+            <th hidden>
                 @Html.DisplayNameFor(model => model.IsActive)
             </th>
             <th>
@@ -94,10 +115,10 @@
                 @*<td>
             @Html.DisplayFor(modelItem => item.Surname)
             </td>*@
-                <td>
+                <td hidden>
                     @Html.DisplayFor(modelItem => item.UserId)
                 </td>
-                <td>
+                <td hidden>
                     @Html.DisplayFor(modelItem => item.IsActive)
                 </td>
                 <td>
@@ -139,9 +160,13 @@
                 <td>
                     @Html.ActionLink("Edit", "Edit", new {  id=item.IdEmployee  }, new { @class = ViewBag.CanEdit ? "enabled" : "disabled" }) |
 
-                    @Html.ActionLink("Delete", "Delete", new { id=item.IdEmployee },new { @class = ViewBag.CanDelete ? "enabled" : "disabled" })
+                    @Html.ActionLink("Delete", "Delete", new { id=item.IdEmployee },new { @class = ViewBag.CanDelete ? "enabled" : "disabled" }) |
+
+                    @Html.ActionLink("Details", "Details", new {  id=item.IdEmployee  })
+
                 </td>
             </tr>
         }
     </tbody>
 </table>
+

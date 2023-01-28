@@ -7,6 +7,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
+
+<style>
+    .disabled {
+        color: gray;
+        pointer-events: none;
+    }
+</style>
+
+
 <script>
     function displayFiles() {
         var checkboxHasAttachments = document.getElementById("HasAttachments");
@@ -84,7 +93,7 @@
             <div class="form-group">
                 <label asp-for="AssignedToString" class="control-label"></label>
                 <br />
-                <select id="ddlUsersList" name="ddlUsersList">
+                <select id="ddlUsersList" name="ddlUsersList" class="@(ViewBag.CanAssign ? "enabled" : "disabled")">
                     <option value="" disabled selected>Select an option</option>
                     @foreach (var item in ViewBag.UsersList)
                     {

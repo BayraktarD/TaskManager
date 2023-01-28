@@ -32,31 +32,39 @@ namespace TaskManager.Controllers
             _jobTitlesRepository = new Repository.JobTitleRepository(dbContext);
         }
 
-        public EmployeeModel LoggedEmployee { get; set; }
+        protected EmployeeModel LoggedEmployee { get; set; }
 
-        private EmployeeModel GetLoggedEmployee()
+        private async Task<EmployeeModel> GetLoggedEmployee()
         {
             var loggedUser = User.Claims.Select(x => x.Value).ToArray()[0];
             Guid.TryParse(loggedUser, out Guid userId);
             LoggedEmployee = _repository.GetEmployeeByUserId(userId);
-            return LoggedEmployee;
+            return await System.Threading.Tasks.Task.FromResult(LoggedEmployee);
         }
 
         // GET: EmployeeController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            GetLoggedEmployee();
-            GetPermissions();
-            var employees = _repository.GetAllEmployees(LoggedEmployee.IdEmployee);
+            await GetLoggedEmployee();
+            await GetPermissions();
+            var employees = _repository.GetAllEmployees(LoggedEmployee.IdEmployee).Result;
 
             return View("Index", employees);
         }
 
-        private void GetPermissions()
+        public ActionResult Index1()
         {
+            return View("Index1");
+        }
+
+        private async Task<bool> GetPermissions()
+        {
+            GetLoggedEmployee();
             ViewBag.CanCreate = LoggedEmployee.CanCreateProfiles;
             ViewBag.CanEdit = LoggedEmployee.CanModifyProfiles;
             ViewBag.CanDelete = LoggedEmployee.CanDeleteProfiles;
+            return true;
+
         }
 
         // GET: EmployeeController/TaskDetails/5
@@ -76,7 +84,7 @@ namespace TaskManager.Controllers
         // POST: EmployeeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(IFormCollection collection)
         {
             try
             {
@@ -84,7 +92,7 @@ namespace TaskManager.Controllers
 
                 Guid jobTitle;
                 Guid department;
-
+                GetPermissions();
                 string jobTypesListSelectedValue, departemntsListSelectedValue;
 
                 jobTypesListSelectedValue = Request.Form["ddlJobsList"].ToString();
@@ -106,26 +114,31 @@ namespace TaskManager.Controllers
                     task.Wait();
                     if (task.Result)
                     {
-                        _repository.InsertEmployee(model);
-                        return RedirectToAction("Index");
+                        var idEmployee = await _repository.InsertEmployee(model);
+
+                    }
+                    else
+                    {
+                        TempData["creationFailed"] = @"The employee profile was not created due to an error (CODE:0N54\/3_C)!";
+
+                        return View("Index");
                     }
 
-                    SelectCategory(null, null, null, null);
-
-                    return View("EmployeeCreate");
+                    TempData["createdWithSuccess"] = "The employee profile was created with success!";
+                    return RedirectToAction("Index");
 
                 }
                 else
                 {
-                    SelectCategory(null, null, null, null);
-                    return View("EmployeeCreate");
+                    TempData["creationFailed"] = @"The employee profile was not created due to an error (CODE:0NDD1D39J0B_C)!";
+
+                    return View("Index");
                 };
 
             }
-            catch
+            catch(Exception ex)
             {
-                SelectCategory(null, null, null, null);
-                return View("EmployeeCreate");
+                throw ex;
             }
         }
 
@@ -162,27 +175,32 @@ namespace TaskManager.Controllers
                 {
                     model.JobTitle = jobTitle;
                     model.Department = department;
+
+                    var task = TryUpdateModelAsync(model);
+                    task.Wait();
+                    if (task.Result)
+                    {
+                        _repository.UpdateEmployee(model);
+                        TempData["modifiedWithSuccess"] = "The employee data was modified with success!";
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        TempData["employeeModificationFailed"] = @"The employee data was not modified due to an error (CODE:0N54\/3_E)!";
+                        return RedirectToAction("Index", id);
+                    }
+
                 }
                 else
                 {
+                    TempData["employeeModificationFailed"] = @"The employee profile was not created due to an error (CODE:0NDD1D39J0B_E)!";
+
                     return RedirectToAction("Index", id);
                 };
-
-                var task = TryUpdateModelAsync(model);
-                task.Wait();
-                if (task.Result)
-                {
-                    _repository.UpdateEmployee(model);
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Index", id);
-                }
             }
-            catch
+            catch(Exception ex)
             {
-                return RedirectToAction("Index", id);
+                throw ex;
             }
         }
 
@@ -222,7 +240,7 @@ namespace TaskManager.Controllers
 
 
 
-        public ActionResult SelectCategory(string departmentText, string departmentValue, string jobTitleText, string jobTitleValue)
+        public async Task<IActionResult> SelectCategory(string departmentText, string departmentValue, string jobTitleText, string jobTitleValue)
         {
 
             //Populate departments ddl
@@ -268,7 +286,8 @@ namespace TaskManager.Controllers
 
             List<SelectListItem> employees = new List<SelectListItem>();
 
-            foreach (var item in _repository.GetAllEmployees(GetLoggedEmployee().IdEmployee))
+            var result = GetLoggedEmployee().Result;
+            foreach (var item in await _repository.GetAllEmployees(result.IdEmployee))
             {
                 employees.Add(new SelectListItem
                 {
@@ -278,7 +297,7 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.Employees = employees;
-            return View();
+            return Ok();
         }
 
     }
