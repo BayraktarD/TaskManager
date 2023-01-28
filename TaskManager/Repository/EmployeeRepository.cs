@@ -37,7 +37,6 @@ namespace TaskManager.Repository
             _configuration = configuration;
         }
 
-        public List<EmployeeModel> GetAllEmployees(Guid log)
         public async Task<List<EmployeeModel>> GetAllEmployees(Guid log)
         {
             List<EmployeeModel> models = new List<EmployeeModel>();
