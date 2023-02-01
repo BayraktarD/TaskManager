@@ -72,6 +72,9 @@ namespace TaskManager.Models
         [Display(Name = "Has Attachments")]
         public bool HasAttachments { get; set; }
 
+        [Display(Name = "Name")]
+        public string TaskName { get; set; }
+
         public virtual ICollection<TaskAttachmentModel>? TaskAttachments { get; set; }
 
 

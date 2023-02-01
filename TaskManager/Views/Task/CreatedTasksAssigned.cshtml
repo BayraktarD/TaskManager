@@ -12,17 +12,28 @@
     }
 </style>
 
-<h1>CreatedTasksAssigned</h1>
+<h1 style="text-align:center">CreatedTasksAssigned</h1>
+<hr />
+<div class="row">
+    <div class="col-sm">
+        <h3>Assigned</h3>
+    </div>
+    <div class="col-sm">
+        <p style="text-align:right">
+            <a asp-action="Create" class="@(ViewBag.CanCreate ? "enabled" : "disabled")">Create New</a>
+        </p>
+    </div>
+</div>
+<hr />
 
-<p>
-    <a asp-action="Create" class="@(ViewBag.CanCreate ? "enabled" : "disabled")">Create New</a>
-</p>
-<h3>Assigned</h3>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th hidden>
                 @Html.DisplayNameFor(model => model.IdTask)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedByString)
@@ -42,6 +53,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.TaskDetails)
             </th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -50,6 +64,9 @@
             <tr>
                 <td hidden>
                     @Html.DisplayFor(modelItem => item.IdTask)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TaskName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedByString)

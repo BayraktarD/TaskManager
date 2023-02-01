@@ -150,7 +150,7 @@
     </div>
 }
 
-<h1>EmployeeCreate</h1>
+<h1 style="text-align:center">EmployeeCreate</h1><hr >
 
 <h4>EmployeeModel</h4>
 <hr />
@@ -204,9 +204,10 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="CanModifyProfiles" /> @Html.DisplayNameFor(model => model.CanModifyProfiles)
+                    <input class="form-check-input" asp-for="CanModifyTasks" /> @Html.DisplayNameFor(model => model.CanModifyTasks)
                 </label>
             </div>
+          
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="CanDeleteTasks" /> @Html.DisplayNameFor(model => model.CanDeleteTasks)
@@ -224,9 +225,10 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="CanModifyTasks" /> @Html.DisplayNameFor(model => model.CanModifyTasks)
+                    <input class="form-check-input" asp-for="CanModifyProfiles" /> @Html.DisplayNameFor(model => model.CanModifyProfiles)
                 </label>
             </div>
+            
             <div class="form-group" hidden>
                 <label asp-for="JobTitle" class="control-label"></label>
             </div>

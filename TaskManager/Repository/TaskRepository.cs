@@ -105,6 +105,7 @@ namespace TaskManager.Repository
                 listTask.IsActive = dbTask.IsActive;
                 listTask.TaskDetails = dbTask.TaskDetails;
                 listTask.HasAttachments = dbTask.HasAttachments;
+                listTask.TaskName = dbTask.TaskName;
             }
             return listTask;
         }
@@ -133,6 +134,8 @@ namespace TaskManager.Repository
                 dbTask.IsActive = taskModel.IsActive;
                 dbTask.TaskDetails = taskModel.TaskDetails;
                 dbTask.HasAttachments = taskModel.HasAttachments;
+                dbTask.TaskName = taskModel.TaskName;
+
 
                 dbContext.Tasks.Update(dbTask);
                 dbContext.SaveChanges();
@@ -162,6 +165,8 @@ namespace TaskManager.Repository
                 task.TaskDetails = taskModel.TaskDetails;
 
                 task.HasAttachments = taskModel.HasAttachments;
+                task.TaskName = taskModel.TaskName;
+
             }
             return task;
         }

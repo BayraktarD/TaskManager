@@ -25,6 +25,7 @@ namespace TaskManager.Models.DBObjects
         public string TaskDetails { get; set; } = null!;
         public bool HasAttachments { get; set; }
         public string? SolutionDetails { get; set; }
+        public string? TaskName { get; set; }
 
         public virtual Employee AssignedTo { get; set; } = null!;
         public virtual Employee CreatedBy { get; set; } = null!;

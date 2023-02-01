@@ -5,12 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 style="text-align:center">Index</h1><hr >
 
-<p>
+<p style="text-align:center">
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -20,6 +20,7 @@
                 @Html.DisplayNameFor(model => model.Department1)
             </th>
             <th>
+                Actions
             </th>
         </tr>
     </thead>

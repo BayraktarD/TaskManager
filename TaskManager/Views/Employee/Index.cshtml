@@ -37,15 +37,15 @@
     <div class="alert alert-danger">@TempData["creationFailed"]</div>
 }
 
-<h1>Index</h1>
+<h1 style="text-align:center">List Employees</h1><hr >
 
-<p>
+<p style="text-align:right">
     <a asp-action="Create" class="@(ViewBag.CanCreate ? "enabled" : "disabled")">Create New</a>
 
 </p>
 
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th hidden>
@@ -99,7 +99,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.DepartmentString)
             </th>
-            <th></th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>

@@ -80,14 +80,14 @@ namespace TaskManager.Data
             //    entity.HasMany(d => d.Roles)
             //        .WithMany(p => p.Users)
             //        .UsingEntity<Dictionary<string, object>>(
-            //            "AspNetUserRolesM",
-            //            l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_AspNetUserRoles_AspNetRoles_RoleId"),
-            //            r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_AspNetUserRoles_AspNetUsers_UserId"),
+            //            "AspNetUserRole",
+            //            l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+            //            r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
             //            j =>
             //            {
-            //                j.HasKey("UserId", "RoleId").HasName("PK_AspNetUserRoles");
+            //                j.HasKey("UserId", "RoleId");
 
-            //                j.ToTable("AspNetUserRolesM");
+            //                j.ToTable("AspNetUserRoles");
 
             //                j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
             //            });
@@ -213,6 +213,8 @@ namespace TaskManager.Data
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.TaskDetails).HasMaxLength(1000);
+
+                entity.Property(e => e.TaskName).HasMaxLength(50);
 
                 entity.HasOne(d => d.AssignedTo)
                     .WithMany(p => p.TaskAssignedTos)

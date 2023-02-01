@@ -1,8 +1,119 @@
-﻿@{
+﻿@model IEnumerable<TaskManager.Models.TaskModel>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    <h4 style="text-align:center">My Tasks</h4>
+    <hr />
+    <div class="row">
+
+        <div class="col-sm">
+            <div><b>Accomplish until @DateTime.Now.AddDays(1).Date : </b></div>
+            <hr />
+            <table class="table table-striped" style="width:85%">
+                <thead>
+                    <tr>
+                        <th hidden>
+                            @Html.DisplayNameFor(model => model.IdTask)
+                        </th>
+                        <td>|</td>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.TaskName)
+                        </th>
+                        <td>|</td>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreatedByString)
+                        </th>
+                        <td>|</td>
+
+                        <th>
+                            View
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.EndDate <= DateTime.Now.AddDays(1) && x.EndDate > DateTime.Now))
+                    {
+                        <tr>
+                            <td hidden>
+                                @Html.DisplayFor(modelItem => item.IdTask)
+                            </td>
+                            <td>|</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TaskName)
+                            </td>
+                            <td>|</td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedByString)
+                            </td>
+                            <td>|</td>
+
+
+                            <td>
+                                @Html.ActionLink("Details", "Details", new { id=item.IdTask })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="col-sm">
+            <div><b>Recently Done:</b></div>
+            <hr />
+            <table class="table table-striped" style="width:85%">
+                <thead>
+                    <tr>
+                        <th hidden>
+                            @Html.DisplayNameFor(model => model.IdTask)
+                        </th>
+                        <td>|</td>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.TaskName)
+                        </th>
+                        <td>|</td>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreatedByString)
+                        </th>
+                        <td>|</td>
+
+                        <th>
+                            View
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.FinishedDate != null).OrderByDescending(x => x.FinishedDate).Take(5))
+                    {
+                        <tr>
+                            <td hidden>
+                                @Html.DisplayFor(modelItem => item.IdTask)
+                            </td>
+                            <td>|</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TaskName)
+                            </td>
+                            <td>|</td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedByString)
+                            </td>
+                            <td>|</td>
+                            <td>
+                                @Html.ActionLink("Details", "Details", new { id=item.IdTask })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

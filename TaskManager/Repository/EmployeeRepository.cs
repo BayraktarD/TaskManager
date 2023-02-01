@@ -40,7 +40,50 @@ namespace TaskManager.Repository
         public async Task<List<EmployeeModel>> GetAllEmployees(Guid log)
         {
             List<EmployeeModel> models = new List<EmployeeModel>();
-            foreach (var dbModel in dbContext.Employees.Where(x => x.IdEmployee != log))
+
+            var currentUser = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == log);
+            if (currentUser != null)
+            {
+                if (currentUser.Name.ToLower().Contains("demo") || currentUser.Surname.ToLower().Contains("demo") || currentUser.Email.ToLower().Contains("demo"))
+                {
+                    foreach (var dbModel in dbContext.Employees.Where(x => x.IdEmployee != log
+                                                            && (
+                                                                x.Name.ToLower().Contains("demo") == true
+                                                                && x.Surname.ToLower().Contains("demo") == true
+                                                                && x.Email.ToLower().Contains("demo") == true)
+                                                                )
+                        )
+                    {
+                        models.Add(MapDbObjectToModel(dbModel));
+                    }
+                }
+                else
+                {
+
+                    foreach (var dbModel in dbContext.Employees.Where(x => x.IdEmployee != log
+                                                            && (
+                                                               x.Name.ToLower().Contains("demo") == false
+                                                                || x.Surname.ToLower().Contains("demo") == false
+                                                                || x.Email.ToLower().Contains("demo") == false)
+                                                                )
+                        )
+                    {
+                        models.Add(MapDbObjectToModel(dbModel));
+                    }
+                }
+            }
+            return models;
+        }
+
+        public async Task<List<EmployeeModel>> GetAllDemoEmployees()
+        {
+            List<EmployeeModel> models = new List<EmployeeModel>();
+
+            foreach (var dbModel in dbContext.Employees.Where(x =>
+                                                        x.Name.ToLower().Contains("demo") == true
+                                                        && x.Surname.ToLower().Contains("demo") == true
+                                                        && x.Email.ToLower().Contains("demo") == true)
+                )
             {
                 models.Add(MapDbObjectToModel(dbModel));
             }

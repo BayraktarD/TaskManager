@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>TaskDelete</h1>
+<h1 style="text-align:center">TaskDelete</h1><hr >
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -18,6 +18,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.IdTask)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TaskName)
+        </dt>
+        <dt class="col-sm-10">
+            @Html.DisplayFor(model => model.TaskName)
+        </dt>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedByString)
         </dt>
