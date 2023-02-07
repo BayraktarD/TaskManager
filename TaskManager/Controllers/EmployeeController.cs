@@ -34,36 +34,30 @@ namespace TaskManager.Controllers
 
         protected EmployeeModel LoggedEmployee { get; set; }
 
-        private async Task<EmployeeModel> GetLoggedEmployee()
+        private EmployeeModel GetLoggedEmployee()
         {
             var loggedUser = User.Claims.Select(x => x.Value).ToArray()[0];
             Guid.TryParse(loggedUser, out Guid userId);
             LoggedEmployee = _repository.GetEmployeeByUserId(userId);
-            return await System.Threading.Tasks.Task.FromResult(LoggedEmployee);
+            return LoggedEmployee;
         }
 
         // GET: EmployeeController
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            await GetLoggedEmployee();
-            await GetPermissions();
+            GetLoggedEmployee();
+            GetPermissions();
             var employees = _repository.GetAllEmployees(LoggedEmployee.IdEmployee).Result;
 
             return View("Index", employees);
         }
 
-        public ActionResult Index1()
-        {
-            return View("Index1");
-        }
-
-        private async Task<bool> GetPermissions()
+        private void GetPermissions()
         {
             GetLoggedEmployee();
             ViewBag.CanCreate = LoggedEmployee.CanCreateProfiles;
             ViewBag.CanEdit = LoggedEmployee.CanModifyProfiles;
             ViewBag.CanDelete = LoggedEmployee.CanDeleteProfiles;
-            return true;
 
         }
 
@@ -114,7 +108,7 @@ namespace TaskManager.Controllers
                     task.Wait();
                     if (task.Result)
                     {
-                        var idEmployee = await _repository.InsertEmployee(model);
+                        var idEmployee = _repository.InsertEmployee(model);
 
                     }
                     else
@@ -286,7 +280,7 @@ namespace TaskManager.Controllers
 
             List<SelectListItem> employees = new List<SelectListItem>();
 
-            var result = GetLoggedEmployee().Result;
+            var result = GetLoggedEmployee();
             foreach (var item in await _repository.GetAllEmployees(result.IdEmployee))
             {
                 employees.Add(new SelectListItem

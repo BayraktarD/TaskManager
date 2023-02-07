@@ -59,7 +59,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Where(x => x.CreatedById == ViewBag.EmployeeId && x.IsActive == false))
+        @foreach (var item in Model.Where(x => x.CreatedById == ViewBag.EmployeeId && x.IsActive == false && x.EndDate >= DateTime.Now.Date))
         {
             <tr>
                 <td hidden>

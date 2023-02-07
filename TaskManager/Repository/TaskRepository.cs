@@ -24,8 +24,19 @@ namespace TaskManager.Repository
 
         }
 
+        public void RefershTaskIsActiveState()
+        {
+            foreach (var item in dbContext.Tasks.Where(x => x.StartDate <= DateTime.Now.Date && x.FinishedDate == null && x.IsActive == false))
+            {
+                item.IsActive = true;
+                dbContext.Update(item);
+            }
+            dbContext.SaveChanges();
+        }
+
         public List<TaskModel> GetAllEmployeeTasks(Guid idEmployee)
         {
+            RefershTaskIsActiveState();
             List<TaskModel> listTask = new List<TaskModel>();
 
             foreach (var task in dbContext.Tasks.Where(x => x.AssignedToId == idEmployee || x.CreatedById == idEmployee))
@@ -158,10 +169,10 @@ namespace TaskManager.Repository
                 task.EditableEndDate = taskModel.EditableEndDate;
                 task.AssignedToId = taskModel.AssignedToId;
 
-                if (task.StartDate.Date == DateTime.Now.Date)
+                if (task.StartDate.Date <= DateTime.Now.Date)
                     task.IsActive = true;
                 else
-                    task.IsActive &= taskModel.IsActive;
+                    task.IsActive = false;
                 task.TaskDetails = taskModel.TaskDetails;
 
                 task.HasAttachments = taskModel.HasAttachments;

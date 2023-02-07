@@ -4,6 +4,7 @@
     ViewData["Title"] = "Home Page";
 }
 
+
 <div class="container">
     <h4 style="text-align:center">My Tasks</h4>
     <hr />
@@ -36,7 +37,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.EndDate <= DateTime.Now.AddDays(1) && x.EndDate > DateTime.Now))
+                    @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.EndDate <= DateTime.Now.AddDays(1) && x.EndDate > DateTime.Now && x.FinishedDate == null))
                     {
                         <tr>
                             <td hidden>

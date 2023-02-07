@@ -136,15 +136,15 @@ namespace TaskManager.Repository
             return model;
         }
 
-        public async Task<Guid> InsertEmployee(EmployeeModel model)
+        public Guid InsertEmployee(EmployeeModel model)
         {
             if (model != null)
             {
                 model.IdEmployee = Guid.NewGuid();
 
-                model.UserId = await InsertNewUser(model.Email, model.Password);
-                await dbContext.Employees.AddAsync(MapModelToDbObject(model));
-                await dbContext.SaveChangesAsync();
+                model.UserId = InsertNewUser(model.Email, model.Password);
+                dbContext.Employees.Add(MapModelToDbObject(model));
+                dbContext.SaveChanges();
 
             }
             return model.IdEmployee;
@@ -223,7 +223,7 @@ namespace TaskManager.Repository
         }
 
 
-        public async Task<string> InsertNewUser(string email, string password)
+        public string InsertNewUser(string email, string password)
         {
             string connectionString = _configuration.GetConnectionString("TaskManagerDB");
 
@@ -267,20 +267,20 @@ namespace TaskManager.Repository
                 SqlCommand cmd = new SqlCommand(insert, connection);
 
 
-                var i = await cmd.ExecuteNonQueryAsync();
+                var i = cmd.ExecuteNonQuery();
 
                 connection.Close();
 
                 if (i > 0)
                 {
-                    return await GetInsertedUserId(email);
+                    return GetInsertedUserId(email);
                 }
             }
 
             return null;
         }
 
-        private async Task<string> GetInsertedUserId(string email)
+        private string GetInsertedUserId(string email)
         {
             string connectionString = _configuration.GetConnectionString("TaskManagerDB");
 
@@ -291,7 +291,7 @@ namespace TaskManager.Repository
 
                 string getInserted = @"select Id from AspNetUsers where Email = '" + email + "'";
                 SqlCommand command = new SqlCommand(getInserted, connection);
-                var result = await command.ExecuteScalarAsync();
+                var result = command.ExecuteScalar();
 
                 connection.Close();
                 return result.ToString();

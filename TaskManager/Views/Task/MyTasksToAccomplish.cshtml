@@ -62,15 +62,15 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.FinishedDate == null))
+        @foreach (var item in Model.Where(x => x.AssignedToId == ViewBag.EmployeeId && x.FinishedDate == null && x.EndDate >= DateTime.Now.Date && x.StartDate<=DateTime.Now.Date))
         {
             <tr>
                 <td hidden>
                     @Html.DisplayFor(modelItem => item.IdTask)
                 </td>
-                <th>
+                <td>
                     @Html.DisplayFor(model => item.TaskName)
-                </th>
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedByString)
                 </td>
