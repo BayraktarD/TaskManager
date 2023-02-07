@@ -237,7 +237,7 @@ namespace TaskManager.Repository
 
                 IdentityUser user = GenerateNewUser(email, userId, userName);
 
-                user = HashPassword(user, userId.ToString(), password);
+                user = HashPassword(user, password);
 
                 string insert = @"Insert into AspNetUsers (Id,
                                                             UserName,
