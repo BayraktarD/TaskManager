@@ -336,7 +336,7 @@ namespace TaskManager.Repository
 
                 var user = MapDbUserToUserModel(dt, userId);
 
-                user = HashPassword(user, userId, password);
+                user = HashPassword(user, password);
 
                 string hashedPassword = user.PasswordHash;
                 string securityStamp = user.SecurityStamp;
@@ -433,7 +433,7 @@ namespace TaskManager.Repository
 
         }
 
-        public IdentityUser HashPassword(IdentityUser user, string userId, string password)
+        public IdentityUser HashPassword(IdentityUser user, string password)
         {
             var hasher = new PasswordHasher<IdentityUser>();
 
