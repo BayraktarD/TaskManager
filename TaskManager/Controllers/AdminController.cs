@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net;
+using TaskManager.EmailManagementApi.Entities;
+using TaskManager.Services.API;
+using static Humanizer.On;
 
 namespace TaskManager.Controllers
 {
@@ -22,6 +27,39 @@ namespace TaskManager.Controllers
         {
             return View();
         }
+
+
+        [HttpPost]
+        public async Task<ActionResult> AddClientApp()
+        {
+            IncomingClientApp incomingClientApp = new IncomingClientApp
+            {
+                ClientAppName = "TaskManager",
+                ConfirmUrl = "ConfirmUrl",
+                ClientRsaPublicKey = "ClientRsaPublicKey",
+                EmailAddress = "dorin.bayraktar@ulbsibiu.ro",
+                EmailManagementApiKey = ""
+            };
+
+            string json = JsonConvert.SerializeObject(incomingClientApp);
+
+            EmailManagementApiClient emailManagementApiClient = new EmailManagementApiClient();
+
+            var responseJson = await emailManagementApiClient.PostAsync(json, "https://localhost:7120/" + "api/ClientApp/AddClientApp");
+            Dictionary<bool, string> response = JsonConvert.DeserializeObject<Dictionary<bool, string>>(responseJson);
+            if (response.Keys.First() == true)
+            {
+                return Json(new { success = true, message = "Client app added successfully!" });
+
+            }
+
+            //// Assuming EmailManagementApiClient is a service you've implemented or injected
+            //var result = await EmailManagementApiClient.PostAsync<Task<IActionResult>>("api/ClientApp/AddClientApp", incomingClientApp);
+
+            return Json(new { success = false, message = "Client app  wasn't added!" });
+        }
+
+      
 
         // POST: AdminController/Create
         [HttpPost]

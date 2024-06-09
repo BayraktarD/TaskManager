@@ -1,22 +1,18 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using TaskManager.Data;
-using TaskManager.Models;
-using TaskManager.Models.DBObjects;
-using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using System.Security.Cryptography;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Diagnostics.Eventing.Reader;
-using PasswordVerificationResult = Microsoft.AspNetCore.Identity.PasswordVerificationResult;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Data;
+using TaskManager.Data;
+using TaskManager.EmailManagementApi.Entities;
+using TaskManager.Models;
+using TaskManager.Models.DBObjects;
+using TaskManager.Services.API;
+using TaskManager.Usings;
+using PasswordVerificationResult = Microsoft.AspNetCore.Identity.PasswordVerificationResult;
 
 namespace TaskManager.Repository
 {
@@ -77,17 +73,26 @@ namespace TaskManager.Repository
 
         public async Task<List<EmployeeModel>> GetAllDemoEmployees()
         {
-            List<EmployeeModel> models = new List<EmployeeModel>();
-
-            foreach (var dbModel in dbContext.Employees.Where(x =>
-                                                        x.Name.ToLower().Contains("demo") == true
-                                                        && x.Surname.ToLower().Contains("demo") == true
-                                                        && x.Email.ToLower().Contains("demo") == true)
-                )
+            try
             {
-                models.Add(MapDbObjectToModel(dbModel));
+                List<EmployeeModel> models = new List<EmployeeModel>();
+
+                foreach (var dbModel in dbContext.Employees.Where(x =>
+                                                            x.Name.ToLower().Contains("demo") == true
+                                                            && x.Surname.ToLower().Contains("demo") == true
+                                                            && x.Email.ToLower().Contains("demo") == true)
+                    )
+                {
+                    models.Add(MapDbObjectToModel(dbModel));
+                }
+                return models;
+
             }
-            return models;
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public EmployeeModel GetEmployeeById(Guid id)
@@ -142,9 +147,12 @@ namespace TaskManager.Repository
             {
                 model.IdEmployee = Guid.NewGuid();
 
-                model.UserId = InsertNewUser(model.Email, model.Password);
+                //var userId = InsertNewUser(model.Email, model.Password);
+                //model.UserId = userId;
                 dbContext.Employees.Add(MapModelToDbObject(model));
                 dbContext.SaveChanges();
+
+                var result = System.Threading.Tasks.Task.Run(async () => await SendEmail(EmailSubjectTypes.UserCreated, model.IdEmployee)).GetAwaiter().GetResult();
 
             }
             return model.IdEmployee;
@@ -270,11 +278,15 @@ namespace TaskManager.Repository
                 var i = cmd.ExecuteNonQuery();
 
                 connection.Close();
+                connection.Dispose();
 
                 if (i > 0)
                 {
-                    return GetInsertedUserId(email);
+                    var employeeIdString = GetInsertedUserId(email);
+                    return employeeIdString;
                 }
+
+
             }
 
             return null;
@@ -294,6 +306,7 @@ namespace TaskManager.Repository
                 var result = command.ExecuteScalar();
 
                 connection.Close();
+                connection.Dispose();
                 return result.ToString();
             }
         }
@@ -454,7 +467,7 @@ namespace TaskManager.Repository
 
         public string UpdateSecurityStampAsync(IdentityUser user)
         {
-            var userManager = new UserManager<IdentityUser>(
+            var userManager = new Microsoft.AspNetCore.Identity.UserManager<IdentityUser>(
                                     new UserStore<IdentityUser>(dbContext),
                                     new OptionsWrapper<IdentityOptions>(new IdentityOptions()),
                                     new PasswordHasher<IdentityUser>(),
@@ -463,7 +476,7 @@ namespace TaskManager.Repository
                                     new UpperInvariantLookupNormalizer(),
                                     new IdentityErrorDescriber(),
                                     null,
-                                    new NullLogger<UserManager<IdentityUser>>()
+                                    new NullLogger<Microsoft.AspNetCore.Identity.UserManager<IdentityUser>>()
                                     );
             userManager.UpdateSecurityStampAsync(user);
             if (user.SecurityStamp != null)
@@ -517,6 +530,54 @@ namespace TaskManager.Repository
                 SqlCommand command = new SqlCommand(deleteUser, connection);
                 command.ExecuteScalar();
             }
+        }
+
+        async Task<bool> SendEmail(EmailSubjectTypes emailSubjectTypes, Guid employeeId)
+        {
+            string endpoint = "api/EmailManagement/SendEmailAsync";
+
+            var employee = GetEmployeeById(employeeId);
+
+            ClientAppEmail clientAppEmail = new ClientAppEmail();
+            clientAppEmail.Body = GetCreateUserEmailContent(employee);
+            clientAppEmail.Subject = "Welcome to out Company";
+            clientAppEmail.EmailManagementApiKey = "cf13f65f-4ee6-4726-9e30-aa1992f93815";
+            clientAppEmail.ConfirmUrl = "ConfirmUrl";
+            clientAppEmail.Recipients = new List<EmailRecipient>
+            {
+                new EmailRecipient
+                {
+                    EmailAddress = "bayraktar.dorin@gmail.com",
+                    FullName = string.Join(' ', employee.Name + " " + employee.Surname)
+                }
+            };
+
+            EmailManagementApiClient emailManagementApiClient = new EmailManagementApiClient();
+            var result = emailManagementApiClient.SendEmailThroughEmailManagementApi(clientAppEmail);
+
+            return true;
+
+        }
+
+        string GetCreateUserEmailContent(EmployeeModel employee)
+        {
+            var template = System.IO.File.ReadAllText("./EmailManagementApi/EmailTemplates/UserCreated.html");
+
+            template = template.Replace("{{Name}}", employee.Name)
+                               .Replace("{{Surname}}", employee.Surname)
+                               .Replace("{{Email}}", employee.Email)
+                               .Replace("{{CanCreateTasks}}", employee.CanCreateTasks ? "Yes" : "No")
+                               .Replace("{{CanAssignTasks}}", employee.CanAssignTasks ? "Yes" : "No")
+                               .Replace("{{CanModifyTasks}}", employee.CanModifyTasks ? "Yes" : "No")
+                               .Replace("{{CanDeleteTasks}}", employee.CanDeleteTasks ? "Yes" : "No")
+                               .Replace("{{CanCreateProfiles}}", employee.CanCreateProfiles ? "Yes" : "No")
+                               .Replace("{{CanModifyProfiles}}", employee.CanModifyProfiles ? "Yes" : "No")
+                               .Replace("{{CanDeleteProfiles}}", employee.CanDeleteProfiles ? "Yes" : "No")
+                               .Replace("{{JobTitleString}}", employee.JobTitleString ?? "N/A")
+                               .Replace("{{DepartmentString}}", employee.DepartmentString ?? "N/A")
+                               .Replace("{{CurrentYear}}", DateTime.Now.Year.ToString());
+
+            return template;
         }
     }
 }

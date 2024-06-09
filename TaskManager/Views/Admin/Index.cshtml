@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 <h1 style="text-align:center">Index</h1><hr >
 <ul>
     <li>
@@ -15,5 +16,37 @@
     <li>
         <a class="nav-link text-dark" asp-area="" asp-controller="AttachmentType" asp-action="Index">Attachment Types</a>
     </li>
+
+    
 </ul>
+
+<button id="addClientAppButton" class="btn btn-primary">Add Client App</button>
+
+<!-- Placeholder for displaying result -->
+<div id="resultMessage"></div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#addClientAppButton').click(function () {
+                $.ajax({
+                    url: '@Url.Action("AddClientApp", "Admin")', // Adjusted the controller name
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#resultMessage').text(response.message).css("color", "green");
+                        } else {
+                            $('#resultMessage').text("Failed to add client app").css("color", "red");
+                        }
+                    },
+                    error: function () {
+                        $('#resultMessage').text("An error occurred").css("color", "red");
+                    }
+                });
+            });
+        });
+    </script>
+}
 

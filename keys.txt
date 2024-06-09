@@ -1,0 +1,7 @@
+taskManager@emailmngmnt.com
+taskManager1?
+
+emailMngmntApiKey cf13f65f-4ee6-4726-9e30-aa1992f93815
+
+bayraktar.dorin@emailmngmnt.com
+taskManager2?

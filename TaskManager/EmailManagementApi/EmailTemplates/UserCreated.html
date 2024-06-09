@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Company</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #007BFF;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+
+            .header h1 {
+                margin: 0;
+            }
+
+        .content {
+            padding: 20px;
+        }
+
+            .content h2 {
+                color: #007BFF;
+                margin-top: 0;
+            }
+
+            .content p {
+                line-height: 1.6;
+            }
+
+            .content ul {
+                list-style: none;
+                padding: 0;
+            }
+
+                .content ul li {
+                    margin-bottom: 10px;
+                    font-size: 14px;
+                }
+
+                    .content ul li strong {
+                        font-weight: bold;
+                    }
+
+        .footer {
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to TaskManager!</h1>
+        </div>
+        <div class="content">
+            <h2>Dear {{Name}} {{Surname}},</h2>
+            <p>We are excited to inform you that your user account has been successfully created with the following details:</p>
+            <ul>
+                <li><strong>Name:</strong> {{Name}}</li>
+                <li><strong>Surname:</strong> {{Surname}}</li>
+                <li><strong>Email:</strong> {{Email}}</li>
+                <li><strong>Job Title:</strong> {{JobTitleString}}</li>
+                <li><strong>Department:</strong> {{DepartmentString}}</li>
+                <li>
+                    <strong>Permissions:</strong>
+                    <ul>
+                        <li><strong>Can Create Tasks:</strong> {{CanCreateTasks}}</li>
+                        <li><strong>Can Assign Tasks:</strong> {{CanAssignTasks}}</li>
+                        <li><strong>Can Modify Tasks:</strong> {{CanModifyTasks}}</li>
+                        <li><strong>Can Delete Tasks:</strong> {{CanDeleteTasks}}</li>
+                        <li><strong>Can Create Profiles:</strong> {{CanCreateProfiles}}</li>
+                        <li><strong>Can Modify Profiles:</strong> {{CanModifyProfiles}}</li>
+                        <li><strong>Can Delete Profiles:</strong> {{CanDeleteProfiles}}</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Your password is known by your system administrator. Please change your password after logging in for the first time.</p>
+            <p>If you have any questions or need assistance, feel free to contact our support team.</p>
+            <p>Best regards,</p>
+            <p>Bayraktar Dorin</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{CurrentYear}} TaskManager. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
