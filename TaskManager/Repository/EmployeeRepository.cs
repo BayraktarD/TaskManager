@@ -164,7 +164,7 @@ namespace TaskManager.Repository
 
             if (dbObject != null)
             {
-                UpdateUser(dbObject.UserId, model.Email, model.Password);
+                // UpdateUser(dbObject.UserId, model.Email, model.Password);
 
                 dbObject.Name = model.Name;
                 dbObject.Surname = model.Surname;
@@ -181,6 +181,9 @@ namespace TaskManager.Repository
 
                 dbContext.Update(dbObject);
                 dbContext.SaveChanges();
+
+                var result = System.Threading.Tasks.Task.Run(async () => await SendEmail(EmailSubjectTypes.UserUpdated, model.IdEmployee)).GetAwaiter().GetResult();
+
             }
         }
 
@@ -223,9 +226,11 @@ namespace TaskManager.Repository
             Employee employee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == id);
             if (employee != null)
             {
-                DeleteUserFromDB(employee.UserId);
+                var result = System.Threading.Tasks.Task.Run(async () => await SendEmail(EmailSubjectTypes.UserDeleted, employee.IdEmployee)).GetAwaiter().GetResult();
+                //DeleteUserFromDB(employee.UserId);
                 dbContext.Employees.Remove(employee);
                 dbContext.SaveChanges();
+
 
             }
         }
@@ -539,8 +544,22 @@ namespace TaskManager.Repository
             var employee = GetEmployeeById(employeeId);
 
             ClientAppEmail clientAppEmail = new ClientAppEmail();
-            clientAppEmail.Body = GetCreateUserEmailContent(employee);
-            clientAppEmail.Subject = "Welcome to out Company";
+            switch (emailSubjectTypes)
+            {
+                case EmailSubjectTypes.UserCreated:
+                    clientAppEmail.Body = GetCreateUserEmailContent(employee);
+                    clientAppEmail.Subject = "Welcome to TaskManager";
+                    break;
+                case EmailSubjectTypes.UserUpdated:
+                    clientAppEmail.Body = GetUpdateUserEmailContent(employee);
+                    clientAppEmail.Subject = "Account Update Notification";
+                    break;
+                case EmailSubjectTypes.UserDeleted:
+                    clientAppEmail.Body = GetDeleteUserEmailContent(employee);
+                    clientAppEmail.Subject = "Account Deletion Notification";
+                    break;
+            }
+
             clientAppEmail.EmailManagementApiKey = "cf13f65f-4ee6-4726-9e30-aa1992f93815";
             clientAppEmail.ConfirmUrl = "ConfirmUrl";
             clientAppEmail.Recipients = new List<EmailRecipient>
@@ -575,6 +594,45 @@ namespace TaskManager.Repository
                                .Replace("{{CanDeleteProfiles}}", employee.CanDeleteProfiles ? "Yes" : "No")
                                .Replace("{{JobTitleString}}", employee.JobTitleString ?? "N/A")
                                .Replace("{{DepartmentString}}", employee.DepartmentString ?? "N/A")
+                               .Replace("{{CurrentYear}}", DateTime.Now.Year.ToString());
+
+            return template;
+        }
+
+        string GetUpdateUserEmailContent(EmployeeModel employee)
+        {
+            var template = System.IO.File.ReadAllText("./EmailManagementApi/EmailTemplates/UpdateUser.html");
+
+            template = template.Replace("{{Name}}", employee.Name)
+                               .Replace("{{Surname}}", employee.Surname)
+                               .Replace("{{Email}}", employee.Email)
+                               .Replace("{{CanCreateTasks}}", employee.CanCreateTasks ? "Yes" : "No")
+                               .Replace("{{CanAssignTasks}}", employee.CanAssignTasks ? "Yes" : "No")
+                               .Replace("{{CanModifyTasks}}", employee.CanModifyTasks ? "Yes" : "No")
+                               .Replace("{{CanDeleteTasks}}", employee.CanDeleteTasks ? "Yes" : "No")
+                               .Replace("{{CanCreateProfiles}}", employee.CanCreateProfiles ? "Yes" : "No")
+                               .Replace("{{CanModifyProfiles}}", employee.CanModifyProfiles ? "Yes" : "No")
+                               .Replace("{{CanDeleteProfiles}}", employee.CanDeleteProfiles ? "Yes" : "No")
+                               .Replace("{{JobTitleString}}", employee.JobTitleString ?? "N/A")
+                               .Replace("{{DepartmentString}}", employee.DepartmentString ?? "N/A")
+                               .Replace("{{CurrentYear}}", DateTime.Now.Year.ToString());
+
+            return template;
+        }
+
+
+        public string GetDeleteUserEmailContent(EmployeeModel employee)
+        {
+
+            var template = System.IO.File.ReadAllText("./EmailManagementApi/EmailTemplates/DeleteUser.html");
+
+            template = template.Replace("{{Name}}", employee.Name)
+                               .Replace("{{Surname}}", employee.Surname)
+                               .Replace("{{IdEmployee}}", employee.IdEmployee.ToString())
+                               .Replace("{{Email}}", employee.Email)
+                               .Replace("{{JobTitleString}}", employee.JobTitleString ?? "N/A")
+                               .Replace("{{DepartmentString}}", employee.DepartmentString ?? "N/A")
+                               .Replace("{{DeletionDate}}", DateTime.Now.ToString("MMMM dd, yyyy HH:mm"))
                                .Replace("{{CurrentYear}}", DateTime.Now.Year.ToString());
 
             return template;
