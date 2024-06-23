@@ -98,8 +98,8 @@ namespace TaskManager.Repository
         public EmployeeModel GetEmployeeById(Guid id)
         {
             EmployeeModel model = new EmployeeModel();
-
-            model = MapDbObjectToModel(dbContext.Employees.FirstOrDefault(x => x.IdEmployee == id));
+            var employee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == id);
+            model = MapDbObjectToModel(employee);
 
             return model;
         }

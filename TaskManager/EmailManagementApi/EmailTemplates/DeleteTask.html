@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Deletion Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+            .content h2 {
+                color: #dc3545;
+            }
+
+            .content p {
+                line-height: 1.5;
+            }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+            .details-table th, .details-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .details-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+
+        .footer {
+            background-color: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Task Deletion Notification</h1>
+        </div>
+        <div class="content">
+            <h2>Dear {{AssignedToString}},</h2>
+            <p>We would like to inform you that the task <strong>"{{TaskName}}"</strong> has been deleted. Please find the details below:</p>
+
+            <table class="details-table">
+                <tr>
+                    <th>Task Name</th>
+                    <td>{{TaskName}}</td>
+                </tr>
+                <tr>
+                    <th>Deleted By</th>
+                    <td>{{ModifiedByString}}</td>
+                </tr>
+                <tr>
+                    <th>Deleted At</th>
+                    <td>{{ModificationDate}}</td>
+                </tr>
+            </table>
+
+            <p>If you have any questions or need further information regarding this deletion, please feel free to contact <strong>{{ModifiedByString}}</strong>.</p>
+
+            <p>Best regards, TaskManager
+        </div>
+        <div class="footer">
+            &copy; 2024 TaskManager. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

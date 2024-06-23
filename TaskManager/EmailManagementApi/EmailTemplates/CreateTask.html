@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Assignment Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+            .content h2 {
+                color: #007bff;
+            }
+
+            .content p {
+                line-height: 1.5;
+            }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+            .details-table th, .details-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .details-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+
+        .footer {
+            background-color: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>New Task Assignment</h1>
+        </div>
+        <div class="content">
+            <h2>Hello, {{AssignedToString}}</h2>
+            <p>You have been assigned a new task. Please find the details below:</p>
+
+            <table class="details-table">
+                <tr>
+                    <th>Task Name</th>
+                    <td>{{TaskName}}</td>
+                </tr>
+                <tr>
+                    <th>Created By</th>
+                    <td>{{CreatedByString}}</td>
+                </tr>
+                <tr>
+                    <th>Created At</th>
+                    <td>{{CreationDate}}</td>
+                </tr>
+                <tr>
+                    <th>Start Date</th>
+                    <td>{{StartDate}}</td>
+                </tr>
+                <tr>
+                    <th>End Date</th>
+                    <td>{{EndDate}}</td>
+                </tr>
+                <tr>
+                    <th>Task Details</th>
+                    <td>{{TaskDetails}}</td>
+                </tr>
+            </table>
+
+            <p>Please make sure to start working on the task by the start date and complete it by the end date. If you have any questions, feel free to reach out.</p>
+
+            <p>Best regards,TaskManager
+        </div>
+        <div class="footer">
+            &copy; 2024 TaskManager. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

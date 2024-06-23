@@ -1,8 +1,13 @@
 ﻿
+using System.Globalization;
+using System.Threading.Tasks;
 using TaskManager.Controllers;
 using TaskManager.Data;
+using TaskManager.EmailManagementApi.Entities;
 using TaskManager.Models;
 using TaskManager.Models.DBObjects;
+using TaskManager.Services.API;
+using TaskManager.Usings;
 
 namespace TaskManager.Repository
 {
@@ -20,7 +25,7 @@ namespace TaskManager.Repository
         public TaskRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this._taskAttachmentsRepository= new TaskAttachmentRepository(dbContext);
+            this._taskAttachmentsRepository = new TaskAttachmentRepository(dbContext);
 
         }
 
@@ -126,8 +131,111 @@ namespace TaskManager.Repository
             taskModel.IdTask = Guid.NewGuid();
             dbContext.Add(MapModelToDbObject(taskModel));
             dbContext.SaveChanges();
+
+            var assignedByEmployee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == taskModel.CreatedById);
+            taskModel.CreatedByString = assignedByEmployee.Surname + " " + assignedByEmployee.Name;
+
+            var assignedToEmployee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == taskModel.AssignedToId);
+            taskModel.AssignedToString = assignedToEmployee.Surname + " " + assignedToEmployee.Name;
+
+
+            var result = System.Threading.Tasks.Task.Run(async () => await SendEmail(EmailSubjectTypes.CreateTask, taskModel)).GetAwaiter().GetResult();
+
             return taskModel.IdTask;
         }
+
+        async Task<bool> SendEmail(EmailSubjectTypes emailSubjectTypes, TaskModel task)
+        {
+            string endpoint = "api/EmailManagement/SendEmailAsync";
+
+            //EmployeeRepository employeeRepository = new EmployeeRepository();
+            //var employee = employeeRepository.GetEmployeeById(task.AssignedToId);
+
+            ClientAppEmail clientAppEmail = new ClientAppEmail();
+            switch (emailSubjectTypes)
+            {
+                case EmailSubjectTypes.CreateTask:
+                    clientAppEmail.Body = GetCreateTaskEmailTempalte(task);
+                    clientAppEmail.Subject = "New Task Assignment";
+                    break;
+                case EmailSubjectTypes.UpdateTask:
+                    clientAppEmail.Body = GetUpdateTaskEmailTempalte(task);
+                    clientAppEmail.Subject = "Task Update Notification";
+                    break;
+                case EmailSubjectTypes.DeleteTask:
+                    clientAppEmail.Body = GetDeleteTaskEmailTempalte(task);
+                    clientAppEmail.Subject = "Task Deletion Notification";
+                    break;
+            }
+
+            clientAppEmail.EmailManagementApiKey = "cf13f65f-4ee6-4726-9e30-aa1992f93815";
+            clientAppEmail.ConfirmUrl = "ConfirmUrl";
+            clientAppEmail.Recipients = new List<EmailRecipient>
+            {
+                new EmailRecipient
+                {
+                    EmailAddress = "bayraktar.dorin@gmail.com",
+                    FullName = string.Join(' ', task.AssignedToString)
+                }
+            };
+
+            EmailManagementApiClient emailManagementApiClient = new EmailManagementApiClient();
+            var result = emailManagementApiClient.SendEmailThroughEmailManagementApi(clientAppEmail);
+
+            return true;
+
+        }
+
+        string GetCreateTaskEmailTempalte(TaskModel task)
+        {
+            var template = System.IO.File.ReadAllText("./EmailManagementApi/EmailTemplates/CreateTask.html");
+            string emailBody = template
+            .Replace("{{TaskName}}", task.TaskName)
+           .Replace("{{CreatedByString}}", task.CreatedByString ?? "Unknown")
+           .Replace("{{CreationDate}}", task.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+           .Replace("{{StartDate}}", task.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+            .Replace("{{EndDate}}", task.EndDate.HasValue ? task.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : "Not specified")
+            .Replace("{{TaskDetails}}", task.TaskDetails)
+           .Replace("{{AssignedToString}}", task.AssignedToString ?? "User");
+
+            return emailBody;
+        }
+
+        string GetUpdateTaskEmailTempalte(TaskModel task)
+        {
+
+            var template = System.IO.File.ReadAllText("./EmailManagementApi/EmailTemplates/UpdateTask.html");
+            string emailBody = template
+            .Replace("{{TaskName}}", task.TaskName)
+            .Replace("{{CreatedByString}}", task.CreatedByString ?? "Unknown")
+            .Replace("{{CreationDate}}", task.CreationDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+            .Replace("{{StartDate}}", task.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture))
+            .Replace("{{EndDate}}", task.EndDate.HasValue ? task.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : "Not specified")
+            .Replace("{{ModifiedByString}}", task.ModifiedByString ?? "Unknown")
+            .Replace("{{ModificationDate}}", task.ModificationDate.HasValue ? task.ModificationDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : "Not specified")
+            .Replace("{{TaskDetails}}", task.TaskDetails)
+            .Replace("{{SolutionDetails}}", task.SolutionDetails ?? "Not specified")
+            .Replace("{{HasAttachmentsText}}", task.HasAttachments ? "Yes" : "No")
+            .Replace("{{IsActiveText}}", task.IsActive ? "Yes" : "No")
+            .Replace("{{FinishedDate}}", task.FinishedDate.HasValue ? task.FinishedDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : "Not specified")
+            .Replace("{{AssignedToString}}", task.AssignedToString ?? "User");
+
+            return emailBody;
+        }
+
+        string GetDeleteTaskEmailTempalte(TaskModel task)
+        {
+            var template = System.IO.File.ReadAllText("./EmailManagementApi/EmailTemplates/DeleteTask.html");
+            string emailBody = template
+            .Replace("{{TaskName}}", task.TaskName)
+            .Replace("{{ModifiedByString}}", task.ModifiedByString ?? "Unknown")
+            .Replace("{{ModificationDate}}", task.ModificationDate.HasValue ? task.ModificationDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : "Not specified")
+            .Replace("{{AssignedToString}}", task.AssignedToString ?? "User");
+
+            return emailBody;
+        }
+
+
 
         public Guid UpdateTask(TaskModel taskModel)
         {
@@ -150,6 +258,16 @@ namespace TaskManager.Repository
 
                 dbContext.Tasks.Update(dbTask);
                 dbContext.SaveChanges();
+                taskModel = MapDbObjectToModel(dbTask);
+                var createdByEmployee = dbContext.Employees.FirstOrDefault(X => X.IdEmployee == taskModel.CreatedById);
+                taskModel.CreatedByString = createdByEmployee.Surname + " " + createdByEmployee.Name;
+                var modifiedByEmployee = dbContext.Employees.FirstOrDefault(X => X.IdEmployee == taskModel.ModifiedById);
+                taskModel.ModifiedByString = modifiedByEmployee.Surname + " " + modifiedByEmployee.Name;
+                var assignedToEmployee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == taskModel.AssignedToId);
+                taskModel.AssignedToString = assignedToEmployee.Surname + " " + assignedToEmployee.Name;
+                taskModel.ModificationDate = DateTime.Now;
+
+                var result = System.Threading.Tasks.Task.Run(async () => await SendEmail(EmailSubjectTypes.UpdateTask, taskModel)).GetAwaiter().GetResult();
             }
             return taskModel.IdTask;
 
@@ -187,7 +305,7 @@ namespace TaskManager.Repository
         {
             Models.DBObjects.Task task = dbContext.Tasks.Where(x => x.IdTask == idTask).FirstOrDefault();
 
-            List<TaskAttachment> taskAttachments = dbContext.TaskAttachments.Select(x=>x).Where(x=>x.IdTask == idTask).ToList();
+            List<TaskAttachment> taskAttachments = dbContext.TaskAttachments.Select(x => x).Where(x => x.IdTask == idTask).ToList();
 
             foreach (var taskAttachment in taskAttachments)
             {
@@ -196,10 +314,21 @@ namespace TaskManager.Repository
 
             if (task != null)
             {
+                var taskModel = MapDbObjectToModel(task);
                 dbContext.Tasks.Remove(task);
                 dbContext.SaveChanges();
+                var modifiedByEmployee = dbContext.Employees.FirstOrDefault(X => X.IdEmployee == taskModel.ModifiedById);
+                taskModel.ModifiedByString = modifiedByEmployee.Surname + " " + modifiedByEmployee.Name;
+                var assignedToEmployee = dbContext.Employees.FirstOrDefault(x => x.IdEmployee == taskModel.AssignedToId);
+                taskModel.AssignedToString = assignedToEmployee.Surname + " " + assignedToEmployee.Name;
+                taskModel.ModificationDate = DateTime.Now;
+
+                var result = System.Threading.Tasks.Task.Run(async () => await SendEmail(EmailSubjectTypes.DeleteTask, taskModel)).GetAwaiter().GetResult();
             }
+
         }
+
+
 
         public Guid FinishTask(TaskModel taskModel)
         {
